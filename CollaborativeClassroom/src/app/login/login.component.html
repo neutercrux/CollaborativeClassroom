@@ -1,0 +1,26 @@
+<body>
+    <div class="login-wrapper" fxLayout="row" fxLayoutAlign="center center">
+
+        <mat-card class="box">
+          <mat-card-header>
+            <mat-card-title>Log in</mat-card-title>
+          </mat-card-header>
+      
+          <form (submit)="loginUser($event)">
+            <mat-card-content>
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="Username" id="username">
+              </mat-form-field>
+      
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="Password" id="password">
+              </mat-form-field>
+            </mat-card-content>
+            <button mat-stroked-button color="accent" class="btn-block">Log in</button>
+          </form>
+          <br/>
+          <a routerLink = "/register" style="text-decoration: none;color:#ff4081;">Don't have an account? Register</a>
+        </mat-card>
+      
+      </div>
+</body>
