@@ -20,18 +20,35 @@ export class LoginComponent implements OnInit {
   loginUser(event){
     event.preventDefault();
     const target = event.target;
-    const username = target.querySelector('#username').value;
+    const usn = target.querySelector('#usn').value;
     const password = target.querySelector('#password').value;
-    this.Auth.getUserDetails(username,password).subscribe(data => {
-      this.response = JSON.parse(JSON.stringify(data));
-      console.log(this.response)
-      if(this.response.status==200){
-        //this.router.navigate(['/subject'])
-      }
-      else{
-        this.router.navigate(['/login'])
-      }
+    this.Auth.getUserDetails(usn,password).subscribe(data => {
+      // this.response = JSON.parse(JSON.stringify(data));
+      console.log(data)
+      // if(this.response.status==200){
+      //   //this.router.navigate(['/subject'])
+      // }
+      // else{
+      //   this.router.navigate(['/login'])
+      // }
     });
   }
 
+  addUser(event){
+    event.preventDefault();
+    const target = event.target;
+    const usn = target.querySelector('#usn').value;
+    const password = target.querySelector('#password').value;
+    const email = 'yaminiagarwal09@gmail.com';
+    this.Auth.addUserDetails(usn,email,password).subscribe(data => {
+      // this.response = JSON.parse(JSON.stringify(data));
+      console.log(data)
+      // if(this.response.status==200){
+      //   //this.router.navigate(['/subject'])
+      // }
+      // else{
+      //   this.router.navigate(['/login'])
+      // }
+    });
+  }
 }
