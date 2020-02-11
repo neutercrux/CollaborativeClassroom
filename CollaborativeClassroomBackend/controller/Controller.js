@@ -10,9 +10,9 @@ exports.signUp = function (req, res) {
     password : req.body.password
     });
   
-    var re = /^[0-9A-Fa-f]{40}$/i;
-    if(!re.test(req.body.password)){
-        console.log("password is not sha1")
+    // var re = /^[0-9A-Fa-f]{40}$/i;
+    if(!(req.body.password)){
+        console.log("password is not found")
         res.status(400).send({});
     }
     else{
@@ -42,11 +42,12 @@ exports.signUp = function (req, res) {
 };
 
 exports.loginUser = function (req,res) {
-    User.find({usn : req.body.usn, password : req.body.password})
+    console.log(req.params);
+    User.find()
         .then(user => {
         console.log(user);
         if(user.length!=1){
-            console.log("No Found");
+            console.log("Not Found");
             res.status(204).send({});
         }
         else{
