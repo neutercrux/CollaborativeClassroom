@@ -4,6 +4,7 @@ port = process.env.PORT || 3000,
 mongoose = require('mongoose'),
 User = require('./models/Model'), //created model loading here
 bodyParser = require('body-parser');
+langMap = require('./language')
   
 app.use(bodyParser.urlencoded({limit : '50MB', extended: true }));
 app.use(bodyParser.json({limit:'50MB'}));
