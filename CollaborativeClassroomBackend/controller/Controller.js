@@ -95,11 +95,11 @@ exports.runCode = function(req,res) {
 
         axios
             .post(jDoodleEndPoint,runRequestBody)
-            .then('error', (error) => { 
+            .on('error', (error) => { 
                 console.log('request.post error', error);
                 return res.status(400).send(error);  
             })
-            .then('data', (data) => {
+            .on('data', (data) => {
                 // data is of Buffer type (array of bytes), need to be parsed to an object.
                 const parsedData = JSON.parse(data.toString());
                 if(parsedData.error) {
