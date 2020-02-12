@@ -3,12 +3,11 @@ module.exports = function(app) {
 
 app.route('/api/v1/users/:usn/:password')
     .get(webapp.loginUser)
-app.route('/register')
+app.route('/api/v1/register')
     .post(webapp.signUp)
-app.route('/items')
-    .get(webapp.getItems)
-app.route('/langs')
+
+app.route('/api/v1/langs')
     .get(webapp.getLangs)
-app.route('/run')
+app.route('/api/v1/run')
     .post(webapp.runCode)
 }

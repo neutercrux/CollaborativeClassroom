@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-
+import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 
 import 'ace-builds/src-noconflict/mode-javascript';
@@ -19,12 +19,21 @@ export class CodeEditorComponent implements OnInit {
 
   private codeEditor: ace.Ace.Editor;
   private editorBeautify;
+  private langArray;
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
 
-  constructor() { }
+  constructor(private _codeEditorService:CodeEditorService ) { }
+
+  getLangs(){
+    this._codeEditorService.getLangs().subscribe(data=>{
+        // console.log(data.body['langMap']);
+        this.langArray = data.body['langMap'];
+        console.log(this.langArray)
+    });
+  }
 
   ngOnInit() {
-
+    this.getLangs();
   }
 
   ngAfterViewInit() {
@@ -70,4 +79,5 @@ export class CodeEditorComponent implements OnInit {
           this.editorBeautify.beautify(session);
       }
   }
+
 }

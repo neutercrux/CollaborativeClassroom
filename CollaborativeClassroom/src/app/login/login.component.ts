@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
     const usn = target.querySelector('#usn').value;
     const password = target.querySelector('#password').value;
     const email = 'yaminiagarwal09@gmail.com';
-    this.Auth.addUserDetails(usn,email,password).subscribe(data => {
+    this.langMapAuth.addUserDetails(usn,email,password).subscribe(data => {
       // this.response = JSON.parse(JSON.stringify(data));
       console.log(data)
       // if(this.response.status==200){

@@ -9,9 +9,9 @@
                     <label class="input-group-text" for="languages-select">Languages</label>
                 </div>
                 <select class="languages-select" id="languages-select" #languagesSelect>
-                    <option value="1">language01</option>
-                    <option value="2">language02</option>
-                    <option value="3">language03</option>
+                    <option *ngFor="let lang of langArray" value={{lang}}>{{lang}}</option>
+                    <!-- <option value="2">language02</option>
+                    <option value="3">language03</option> -->
                 </select>
             </div>
         </div>

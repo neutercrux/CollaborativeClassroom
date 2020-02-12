@@ -69,13 +69,14 @@ exports.loginUser = function (req,res) {
     })
   };
 
-exports.getItems = function (req,res) {
-    console.log(req.params);
 
-}
 
 exports.getLangs = function (req,res) {
-    res.status(200).send({'langMap': langMap});
+    console.log(req);
+    let langs = Array.from( langMap.keys() );
+    console.log(langs);
+    console.log({'langMap': langs});
+    res.status(200).send({'langMap': langs});
 }
 
 exports.runCode = function(req,res) {
