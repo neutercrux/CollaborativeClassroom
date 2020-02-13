@@ -9,7 +9,6 @@ import 'ace-builds/src-noconflict/theme-clouds_midnight';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/ext-beautify';
 import { publish, tap, takeWhile } from 'rxjs/operators';
-import { BehaviorSubject, interval, of } from 'rxjs';
 
 const LANG = 'ace/mode/c_cpp';
 
@@ -47,14 +46,15 @@ export class CodeEditorComponent implements OnInit {
       // hold reference to beautify extension
       this.editorBeautify = ace.require('ace/ext/beautify');
       this.sess = this.codeEditor.getValue();
-      this.timer = setInterval(publish(),2000);
+      this.timer = setInterval(() => { this.publish(); }, 2000);
   }
 
   publish() {
-    console.log("func called");
+    // console.log("func called");
     var new_sess = this.codeEditor.getValue();
     if(this.sess!=new_sess)
     {
+      console.log(new_sess);
       this.sess = new_sess;
       this.pubsub.publishWithLast(this.latestEvent, this.sess);
     }
@@ -89,6 +89,12 @@ export class CodeEditorComponent implements OnInit {
           const code = this.codeEditor.getValue();
           return code;
       }
+  }
+
+  public clearCode() {
+    if (this.codeEditor) {
+      this.codeEditor.setValue("",0);
+  }
   }
 
   /**
