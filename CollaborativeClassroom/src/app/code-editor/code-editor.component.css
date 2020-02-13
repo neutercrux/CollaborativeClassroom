@@ -34,3 +34,16 @@ select.languages-select > option {
 select.languages-select:focus > option:checked { 
     font-weight: bold;
 }
+
+select.themes-select {
+    cursor: pointer;
+}
+
+select.themes-select > option {
+    display: block;
+    background: ghostwhite;
+}
+
+select.themes-select:focus > option:checked { 
+    font-weight: bold;
+}

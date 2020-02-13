@@ -13,6 +13,7 @@ import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { NotesEditorComponent } from './notes-editor/notes-editor.component';
+import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { NotesEditorComponent } from './notes-editor/notes-editor.component';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxPubSubModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,35 +1,27 @@
 <div class="container h-100 mt-4">
     
     <!-- languages & theme -->
-    <div class="row mb-4 justify-content-center mx-4">
+    <div class="row mb-2 justify-content-center">
         <!-- languages select -->
-        <div class="col-auto col-lg-3 col-md-4 col-sm-6">
+        <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="input-group input-group-sm">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="languages-select">Languages</label>
                 </div>
                 <select class="languages-select" id="languages-select" #languagesSelect (change)="selectLang(languagesSelect.value)">
                     <option *ngFor="let lang of langArray" value={{lang}}>{{lang}}</option>
-                    <!-- <option value="2">language02</option>
-                    <option value="3">language03</option> -->
                 </select>
             </div>
         </div>
         <!-- theme radio buttons -->
-        <div class="col-auto col-lg-3 col-md-4 col-sm-6">
-            <div class="btn-group btn-group-toggle btn-group-sm mx-auto" data-toggle="buttons">
-                <label class="btn btn-secondary active">
-                    <input type="radio" name="options" id="option1" autocomplete="off" checked>
-                    theme01
-                </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="options" id="option2" autocomplete="off">
-                    theme02
-                </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="options" id="option3" autocomplete="off">
-                    theme03
-                </label>
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="themes-select">Themes</label>
+                </div>
+                <select class="themes-select" id="themes-select" (change)='setTheme(themesSelect.value)' #themesSelect>
+                    <option *ngFor="let theme of themes" [value]="theme.name" >{{theme.name}}</option>
+                </select>
             </div>
         </div>
     </div>
