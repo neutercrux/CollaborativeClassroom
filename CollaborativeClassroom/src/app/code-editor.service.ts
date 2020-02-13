@@ -14,4 +14,10 @@ export class CodeEditorService {
   getLangs(){
     return this.http.get(this._url_lang,{observe:'response'})
   }
+
+  getOutput(code,lang)
+  {
+    return this.http.post("http://localhost:3000/api/v1/run",{"program":code,"lang":lang},
+                        {observe:'response'})
+  }
 }

@@ -5,10 +5,11 @@ langMap = require('../language')
 lodash = require('lodash'),
 lodashPick = require('lodash.pick'),
 axios = require('axios'),
+https = require('https'),
 myLangMap = require('../language')
 
-var jDoodleClientID = 'fe0e6da657e816473e2dece16a3851ca';
-var jDoodleClientSecret = '3cc1302bbda2100b2426ad3a05fa246ddca4cfab3282a9df6694ef254e1e611f';
+var jDoodleClientID = "fe0e6da657e816473e2dece16a3851ca";
+var jDoodleClientSecret = "3cc1302bbda2100b2426ad3a05fa246ddca4cfab3282a9df6694ef254e1e611f";
 
 exports.signUp = function (req, res) {
 
@@ -80,41 +81,53 @@ exports.getLangs = function (req,res) {
 }
 
 exports.runCode = function(req,res) {
-    var jDoodleEndPoint = "https://api.jdoodle.com/execute";
-    var body = _.pick(req.body, ['lang','program']);
+    var jDoodleEndPoint = "http://api.jdoodle.com/execute";
+    // var body = _.pick(req.body, ['lang','program']);
 
-    try {
-        var obj = myLangMap.get(body.lang);
+    // try {
+        var obj = myLangMap.get(req.body.lang);
 
-        const runRequestBody = {
-            script : body.program,
-            language: body.lang,
-            versionIndex: obj.version,
-            clientId: jDoodleClientID,
-            clientSecret: jDoodleClientSecret
-        };
+        const runRequestBody = JSON.stringify({
+            "script" : req.body.program,
+            "language": req.body.lang,
+            "versionIndex": "1",
+            "clientId": jDoodleClientID,
+            "clientSecret": jDoodleClientSecret
+        });
+        const options = {
+            hostname: 'api.jdoodle.com',
+            port: 443,
+            path: '/execute',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': runRequestBody.length
+            }
+          }
 
-        axios
-            .post(jDoodleEndPoint,runRequestBody)
-            .on('error', (error) => { 
-                console.log('request.post error', error);
-                return res.status(400).send(error);  
+        const requ = https.request(options, (resp) => {
+            console.log(`statusCode: ${resp.statusCode}`)
+        
+            resp.on('data', (d) => {
+            // process.stdout.write(d)
+                console.log(JSON.parse(d.toString()));
+                let output = JSON.parse(d.toString());
+                return res.status(200).send(output);
             })
-            .on('data', (data) => {
-                // data is of Buffer type (array of bytes), need to be parsed to an object.
-                const parsedData = JSON.parse(data.toString());
-                if(parsedData.error) {
-                    return res.status(400).send(parsedData);  
-                } else {
-                    return res.status(200).send({runResult: parsedData});
-                }      
-            })         
+        })
+        
+        requ.on('error', (error) => {
+            console.error(error)
+            return res.status(400).send();
+
+        })
+        
+        requ.write(runRequestBody)
+        requ.end()
+                     
     }
-    catch (error) {
-        console.log('request fail');
-        return res.status(400).send('request fail');
-    }   
-            //axios({   method: 'post',   url: '/login',   data: {     firstName: 'Finn',     lastName: 'Williams'   } });
+ 
+        
 
 
-}
+// }

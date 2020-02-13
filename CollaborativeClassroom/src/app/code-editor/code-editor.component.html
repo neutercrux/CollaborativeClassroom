@@ -8,7 +8,7 @@
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="languages-select">Languages</label>
                 </div>
-                <select class="languages-select" id="languages-select" #languagesSelect>
+                <select class="languages-select" id="languages-select" #languagesSelect (change)="selectLang(languagesSelect.value)">
                     <option *ngFor="let lang of langArray" value={{lang}}>{{lang}}</option>
                     <!-- <option value="2">language02</option>
                     <option value="3">language03</option> -->
@@ -44,7 +44,7 @@
     <!-- run, clear & beautify buttons -->
     <div class="row mb-4 justify-content-center mx-4">
         <div class="col-4 col-lg-2 col-md-3 col-sm-4 w-75">
-            <button type="button" class="btn btn-dark btn-sm btn-block px-4 mx-2" (click)="consoleCode()">
+            <button type="button" class="btn btn-dark btn-sm btn-block px-4 mx-2" (click)="runCode()">
                 Run
             </button>
         </div>

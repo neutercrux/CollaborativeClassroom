@@ -20,6 +20,7 @@ export class CodeEditorComponent implements OnInit {
   private codeEditor: ace.Ace.Editor;
   private editorBeautify;
   private langArray;
+  private lang;
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
 
   constructor(private _codeEditorService:CodeEditorService ) { }
@@ -80,4 +81,18 @@ export class CodeEditorComponent implements OnInit {
       }
   }
 
+  public runCode():void {
+      const code = this.getContent();
+      this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
+        console.log(data.body);
+        // this.langArray = data.body['langMap'];
+        // console.log(this.langArray)
+    });
+  }
+  
+
+  public selectLang(input){
+      this.lang = input;
+  }
+  
 }
