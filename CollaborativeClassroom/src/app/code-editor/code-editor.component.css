@@ -1,17 +1,13 @@
 div.code-editor { 
     max-height: 70vh; 
     height: 500px;
+    border-radius: .5rem!important;
 }
 
 div.label-box {
     border-top-left-radius: .5rem!important;
     border-top-right-radius: .5rem!important;
 }
-
-.form-control { border-radius: 0 !important; }
-
-.form-control:disabled { background-color: #ffffff !important; }
-
 .output {
     border-bottom-left-radius: .5rem!important;
     border-bottom-right-radius: .5rem!important;
@@ -20,30 +16,4 @@ div.label-box {
 .btn-beautify {
     color: #ffffff;
     background-color: #e83e8c;
-}
-
-select.languages-select {
-    cursor: pointer;
-}
-
-select.languages-select > option {
-    display: block;
-    background: ghostwhite;
-}
-
-select.languages-select:focus > option:checked { 
-    font-weight: bold;
-}
-
-select.themes-select {
-    cursor: pointer;
-}
-
-select.themes-select > option {
-    display: block;
-    background: ghostwhite;
-}
-
-select.themes-select:focus > option:checked { 
-    font-weight: bold;
 }

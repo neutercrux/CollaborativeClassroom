@@ -4,13 +4,24 @@ import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
 
+import 'ace-builds/src-noconflict/mode-java';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/mode-csharp';
+import 'ace-builds/src-noconflict/mode-ruby';
+import 'ace-builds/src-noconflict/mode-php';
 import 'ace-builds/src-noconflict/mode-c_cpp';
+
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/theme-github';
+import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/theme-iplastic';
+
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/ext-beautify';
-import { publish, tap, takeWhile } from 'rxjs/operators';
-
-const LANG = 'ace/mode/c_cpp';
+import 'brace/theme/monokai';
+import 'brace/mode/html';
+import 'brace/mode/javascript';
+import 'brace/mode/text';
 
 @Component({
   selector: 'app-code-editor',
@@ -41,7 +52,7 @@ export class CodeEditorComponent implements OnInit {
       const editorOptions = this.getEditorOptions();
       this.codeEditor = ace.edit(element, editorOptions);
       this.codeEditor.setTheme(this.themes[0].actual_name);
-      this.codeEditor.getSession().setMode(LANG);
+      this.codeEditor.getSession().setMode("ace/mode/c_cpp");
       this.codeEditor.setShowFoldWidgets(true);
       // hold reference to beautify extension
       this.editorBeautify = ace.require('ace/ext/beautify');
@@ -63,7 +74,6 @@ export class CodeEditorComponent implements OnInit {
 
   getLangs(){
     this._codeEditorService.getLangs().subscribe(data=>{
-        // console.log(data.body['langMap']);
         this.langArray = data.body['langMap'];
         console.log(this.langArray)
     });
@@ -99,15 +109,24 @@ export class CodeEditorComponent implements OnInit {
 
   /**
    * @description
+   *  set the language based on selection
+   */
+  public setLanguage(language: string ): void {
+    if (this.codeEditor) {
+      var mode = "ace/mode/" + language;
+      this.codeEditor.getSession().setMode(mode);
+    }
+  }
+
+  /**
+   * @description
    *  set the theme based on selection
    */
   public setTheme(theme: string ): void {
     if (this.codeEditor) {
-
-      console.log(this.themes.find(element => element.name == theme).actual_name);
       this.codeEditor.setTheme(this.themes.find(element => element.name == theme).actual_name);
     }
-}
+  }
   
   /**
    * @description
