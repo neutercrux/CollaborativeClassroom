@@ -85,12 +85,12 @@ exports.runCode = function(req,res) {
     // var body = _.pick(req.body, ['lang','program']);
 
     // try {
-        var obj = myLangMap.get(req.body.lang);
-
+        var obj = myLangMap.get(req.body.lang.toString());
+        console.log(obj);
         const runRequestBody = JSON.stringify({
             "script" : req.body.program,
-            "language": req.body.lang,
-            "versionIndex": "1",
+            "language": obj.lang,
+            "versionIndex": obj.versionIndex,
             "clientId": jDoodleClientID,
             "clientSecret": jDoodleClientSecret
         });
@@ -106,11 +106,11 @@ exports.runCode = function(req,res) {
           }
 
         const requ = https.request(options, (resp) => {
-            console.log(`statusCode: ${resp.statusCode}`)
+            //console.log(`statusCode: ${resp.statusCode}`)
         
             resp.on('data', (d) => {
             // process.stdout.write(d)
-                console.log(JSON.parse(d.toString()));
+                //console.log(JSON.parse(d.toString()));
                 let output = JSON.parse(d.toString());
                 return res.status(200).send(output);
             })

@@ -113,6 +113,7 @@ export class CodeEditorComponent implements OnInit {
    */
   public setLanguage(language: string ): void {
     if (this.codeEditor) {
+      this.lang = language;
       var mode = "ace/mode/" + language;
       this.codeEditor.getSession().setMode(mode);
     }
@@ -140,7 +141,7 @@ export class CodeEditorComponent implements OnInit {
   }
 
   public runCode():void {
-      const code = this.getContent();
+      const code = this.codeEditor.getValue();
       this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
         console.log(data.body);
         // this.langArray = data.body['langMap'];
