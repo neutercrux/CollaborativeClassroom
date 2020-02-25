@@ -3,6 +3,8 @@ import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
+import { File } from '../file';
+import { CurrentFileService } from '../current-file.service';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -33,6 +35,8 @@ export class CodeEditorComponent implements OnInit {
   private codeEditor: ace.Ace.Editor;
   private editorBeautify;
   private themes = THEMES;
+  private files: File[] = [];
+  private currentFile: string;
   private langArray;
   private lang;
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
@@ -40,7 +44,7 @@ export class CodeEditorComponent implements OnInit {
   sess;
   latestEvent = 'randomLast';
 
-  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService ) { }
+  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
@@ -57,7 +61,10 @@ export class CodeEditorComponent implements OnInit {
       // hold reference to beautify extension
       this.editorBeautify = ace.require('ace/ext/beautify');
       this.sess = this.codeEditor.getValue();
-      this.timer = setInterval(() => { this.publish(); }, 2000);
+      //this.timer = setInterval(() => { this.publish(); }, 2000);
+      var temp = new File(this.currentFile,"");
+      this.files.push(temp);
+      this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
   }
 
   publish() {
@@ -109,6 +116,25 @@ export class CodeEditorComponent implements OnInit {
 
   /**
    * @description
+   *  set the theme based on selection
+   */
+  public changeCurrentFile(currFile: string): void {
+    if (this.currentFile!=currFile) {
+      this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
+      this.currentFile = currFile;
+      if(this.files.find(element => element.name == this.currentFile)==undefined)
+      {
+        var tempFile = new File(this.currentFile,"");
+        this.files.push(tempFile);
+        //console.log("added new session element")
+      }
+      this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
+      //console.log("changed session to "+this.currentFile);
+    }
+  }
+
+  /**
+   * @description
    *  set the language based on selection
    */
   public setLanguage(language: string ): void {
@@ -118,7 +144,7 @@ export class CodeEditorComponent implements OnInit {
       this.codeEditor.getSession().setMode(mode);
     }
   }
-
+  
   /**
    * @description
    *  set the theme based on selection

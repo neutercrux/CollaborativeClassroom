@@ -1,1 +1,9 @@
-<p>{{codeString}}</p>
+<!-- <p>{{codeString}}</p> -->
+<ul>
+    <li>
+        
+    </li>
+    <li *ngFor="let file of files" (click)='changeCurrFile(file)'>
+        {{file}}
+    </li>
+</ul>
