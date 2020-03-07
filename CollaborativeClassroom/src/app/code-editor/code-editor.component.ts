@@ -39,10 +39,12 @@ export class CodeEditorComponent implements OnInit {
   private currentFile: string;
   private langArray;
   private lang;
+  private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   timer;
   sess;
   latestEvent = 'randomLast';
+  response: any;
 
   constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService) { }
 
@@ -170,8 +172,10 @@ export class CodeEditorComponent implements OnInit {
       const code = this.codeEditor.getValue();
       this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
         console.log(data.body);
+        this.response = JSON.parse(JSON.stringify(data.body))
+        this.outputString = this.response.output;
         // this.langArray = data.body['langMap'];
-        // console.log(this.langArray)
+        console.log(this.outputString)
     });
   }
   

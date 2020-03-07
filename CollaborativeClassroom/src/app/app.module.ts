@@ -13,6 +13,7 @@ import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { NotesEditorComponent } from './notes-editor/notes-editor.component';
+import { RegisterComponent } from './register/register.component';
 import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
 
 @NgModule({
@@ -23,6 +24,7 @@ import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
     FileExplorerComponent,
     MainPageComponent,
     NotesEditorComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

@@ -23,14 +23,14 @@ export class LoginComponent implements OnInit {
     const usn = target.querySelector('#usn').value;
     const password = target.querySelector('#password').value;
     this.Auth.getUserDetails(usn,password).subscribe(data => {
-      // this.response = JSON.parse(JSON.stringify(data));
+      this.response = JSON.parse(JSON.stringify(data));
       console.log(data)
-      // if(this.response.status==200){
-      //   //this.router.navigate(['/subject'])
-      // }
-      // else{
-      //   this.router.navigate(['/login'])
-      // }
+      if(this.response.status==204){
+        this.router.navigate(['/mainPage'])
+      }
+      else{
+        this.router.navigate(['/login'])
+      }
     });
   }
 
