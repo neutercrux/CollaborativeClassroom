@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
@@ -26,11 +26,11 @@ import 'brace/mode/javascript';
 import 'brace/mode/text';
 
 @Component({
-  selector: 'app-code-editor',
-  templateUrl: './code-editor.component.html',
-  styleUrls: ['./code-editor.component.css']
+  selector: 'app-student-code-editor',
+  templateUrl: './student-code-editor.component.html',
+  styleUrls: ['./student-code-editor.component.css']
 })
-export class CodeEditorComponent implements OnInit {
+export class StudentCodeEditorComponent implements OnInit {
 
   private codeEditor: ace.Ace.Editor;
   private editorBeautify;
@@ -41,8 +41,6 @@ export class CodeEditorComponent implements OnInit {
   private lang;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
-  timer;
-  sess;
   latestEvent = 'randomLast';
   response: any;
 
@@ -60,25 +58,8 @@ export class CodeEditorComponent implements OnInit {
       this.codeEditor.setTheme(this.themes[0].actual_name);
       this.codeEditor.getSession().setMode("ace/mode/c_cpp");
       this.codeEditor.setShowFoldWidgets(true);
-      // hold reference to beautify extension
       this.editorBeautify = ace.require('ace/ext/beautify');
-      this.sess = this.codeEditor.getValue();
-      this.timer = setInterval(() => { this.publish(); }, 2000);
-      var temp = new File(this.currentFile,"");
-      this.files.push(temp);
       this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
-  }
-
-  publish() {
-    // console.log("func called");
-    var new_sess = this.codeEditor.getValue();
-    if(this.sess!=new_sess)
-    {
-      console.log(new_sess);
-      this.sess = new_sess;
-      this.pubsub.publishWithLast(this.latestEvent, this.sess);
-    }
-    
   }
 
   /**
@@ -120,22 +101,6 @@ export class CodeEditorComponent implements OnInit {
   }
 
   /**
-   * @returns - the current editor's content.
-   */
-  // public getContent() {
-  //     if (this.codeEditor) {
-  //         const code = this.codeEditor.getValue();
-  //         return code;
-  //     }
-  // }
-
-  public clearCode() {
-    if (this.codeEditor) {
-      this.codeEditor.setValue("",0);
-  }
-  }
-
-  /**
    * @description
    *  set the language based on selection
    */
@@ -156,17 +121,6 @@ export class CodeEditorComponent implements OnInit {
       this.codeEditor.setTheme(this.themes.find(element => element.name == theme).actual_name);
     }
   }
-  
-  /**
-   * @description
-   *  beautify the editor content, rely on Ace Beautify extension.
-   */
-  // public beautifyContent(): void {
-  //     if (this.codeEditor && this.editorBeautify) {
-  //         const session = this.codeEditor.getSession();
-  //         this.editorBeautify.beautify(session);
-  //     }
-  // }
 
   public runCode():void {
       const code = this.codeEditor.getValue();
@@ -177,8 +131,7 @@ export class CodeEditorComponent implements OnInit {
         // this.langArray = data.body['langMap'];
         console.log(this.outputString)
     });
-  }
-  
+  } 
 
   public selectLang(input){
       this.lang = input;

@@ -15,6 +15,7 @@ import { MainPageComponent } from './main-page/main-page.component';
 import { NotesEditorComponent } from './notes-editor/notes-editor.component';
 import { RegisterComponent } from './register/register.component';
 import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
+import { StudentCodeEditorComponent } from './student-code-editor/student-code-editor.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
     FileExplorerComponent,
     MainPageComponent,
     NotesEditorComponent,
-    RegisterComponent
+    RegisterComponent,
+    StudentCodeEditorComponent
   ],
   imports: [
     BrowserModule,

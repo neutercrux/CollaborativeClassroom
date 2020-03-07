@@ -22,7 +22,7 @@ export class RegisterComponent implements OnInit {
     const password = target.querySelector('#password').value;
     const email = target.querySelector('#email').value;
     console.log(username,password,email);
-    this.Auth.addUserDetails(username,email,password).subscribe(data=>{
+    this.Auth.addUserDetails(username,email,password,).subscribe(data=>{
       this.response = JSON.parse(JSON.stringify(data));
       console.log(this.response);
       if(this.response.status==201){

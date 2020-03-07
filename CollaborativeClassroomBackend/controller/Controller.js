@@ -12,13 +12,22 @@ var jDoodleClientID = "fe0e6da657e816473e2dece16a3851ca";
 var jDoodleClientSecret = "3cc1302bbda2100b2426ad3a05fa246ddca4cfab3282a9df6694ef254e1e611f";
 
 exports.signUp = function (req, res) {
+    var desig;
+    var re = /(a|b)*abb/i;
+
+    console.log(re.test(req.body.usn))
+    if(re.test(req.body.usn))
+        desig = "teacher"
+    else
+        desig = "student"
 
     var new_user = new User({
     email : req.body.email,
     usn : req.body.usn,
-    password : req.body.password
+    password : req.body.password,
+    designation: desig
     });
-  
+    
     // var re = /^[0-9A-Fa-f]{40}$/i;
     if(!(req.body.password)){
         console.log("password is not found")
