@@ -13,7 +13,8 @@ export class AuthService {
 
   getUserDetails(usn,password){
     
-    return this.http.get(this._url_login+"/"+usn+"/"+password,{observe:'response'})
+    return this.http.post(this._url_login,{"usn": usn, "password": password},{observe:'response'})
+
   }
 
   addUserDetails(usn,email,password){

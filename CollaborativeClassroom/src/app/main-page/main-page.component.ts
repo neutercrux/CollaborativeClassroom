@@ -7,11 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainPageComponent implements OnInit {
 
-  isStudent: boolean = false;
+  isStudent: boolean;
 
   constructor() { }
 
   ngOnInit() {
+    this.isStudent = ("student" == sessionStorage.getItem("designation"));
+    console.log(sessionStorage.getItem("designation"));
   }
 
 }

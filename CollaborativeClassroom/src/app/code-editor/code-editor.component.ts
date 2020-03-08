@@ -70,11 +70,9 @@ export class CodeEditorComponent implements OnInit {
   }
 
   publish() {
-    // console.log("func called");
     var new_sess = this.codeEditor.getValue();
     if(this.sess!=new_sess)
     {
-      console.log(new_sess);
       this.sess = new_sess;
       this.pubsub.publishWithLast(this.latestEvent, this.sess);
     }
@@ -101,7 +99,6 @@ export class CodeEditorComponent implements OnInit {
   getLangs(){
     this._codeEditorService.getLangs().subscribe(data=>{
         this.langArray = data.body['langMap'];
-        console.log(this.langArray)
     });
   }
 
@@ -169,11 +166,11 @@ export class CodeEditorComponent implements OnInit {
   public runCode():void {
       const code = this.codeEditor.getValue();
       this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
-        console.log(data.body);
+        // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
         this.outputString = this.response.output;
         // this.langArray = data.body['langMap'];
-        console.log(this.outputString)
+        // console.log(this.outputString)
     });
   }
   

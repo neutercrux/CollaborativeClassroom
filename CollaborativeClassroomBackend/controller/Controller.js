@@ -15,7 +15,7 @@ exports.signUp = function (req, res) {
     var desig;
     var re = /(a|b)*abb/i;
 
-    console.log(re.test(req.body.usn))
+    // console.log(re.test(req.body.usn))
     if(re.test(req.body.usn))
         desig = "teacher"
     else
@@ -60,8 +60,8 @@ exports.signUp = function (req, res) {
 };
 
 exports.loginUser = function (req,res) {
-    console.log(req.params);
-    User.find()
+    console.log(req.body);
+    User.find({usn : req.body.usn, password : req.body.password})
         .then(user => {
         console.log(user);
         if(user.length!=1){
@@ -82,10 +82,10 @@ exports.loginUser = function (req,res) {
 
 
 exports.getLangs = function (req,res) {
-    console.log(req);
+    // console.log(req);
     let langs = Array.from( langMap.keys() );
-    console.log(langs);
-    console.log({'langMap': langs});
+    // console.log(langs);
+    // console.log({'langMap': langs});
     res.status(200).send({'langMap': langs});
 }
 
@@ -95,7 +95,7 @@ exports.runCode = function(req,res) {
 
     // try {
         var obj = myLangMap.get(req.body.lang.toString());
-        console.log(obj);
+        // console.log(obj);
         const runRequestBody = JSON.stringify({
             "script" : req.body.program,
             "language": obj.lang,

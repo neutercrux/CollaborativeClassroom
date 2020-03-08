@@ -24,31 +24,14 @@ export class LoginComponent implements OnInit {
     const password = target.querySelector('#password').value;
     this.Auth.getUserDetails(usn,password).subscribe(data => {
       this.response = JSON.parse(JSON.stringify(data));
-      console.log(data)
-      if(this.response.status==204){
+      console.log(this.response[0].designation);
+      sessionStorage.setItem("designation",this.response[0].designation);
+      if(this.response.status==200){
         this.router.navigate(['/mainPage'])
       }
       else{
         this.router.navigate(['/login'])
       }
-    });
-  }
-
-  addUser(event){
-    event.preventDefault();
-    const target = event.target;
-    const usn = target.querySelector('#usn').value;
-    const password = target.querySelector('#password').value;
-    const email = 'yaminiagarwal09@gmail.com';
-    this.Auth.addUserDetails(usn,email,password).subscribe(data => {
-      // this.response = JSON.parse(JSON.stringify(data));
-      console.log(data)
-      // if(this.response.status==200){
-      //   //this.router.navigate(['/subject'])
-      // }
-      // else{
-      //   this.router.navigate(['/login'])
-      // }
     });
   }
 }
