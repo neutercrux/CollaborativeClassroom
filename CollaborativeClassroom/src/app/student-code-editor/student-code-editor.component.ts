@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
+import { Subscription } from 'rxjs';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
@@ -33,7 +34,7 @@ import 'brace/mode/text';
 export class StudentCodeEditorComponent implements OnInit {
 
   private codeEditor: ace.Ace.Editor;
-  private editorBeautify;
+  subscription1: Subscription;
   private themes = THEMES;
   private files: File[] = [];
   private currentFile: string;
@@ -48,6 +49,7 @@ export class StudentCodeEditorComponent implements OnInit {
 
   ngOnInit() {
     this.getLangs();
+    this.subscription1 = this.pubsub.subscribe('randomLast',data => this.updateFileData(data));
   }
 
   ngAfterViewInit() {
@@ -58,13 +60,35 @@ export class StudentCodeEditorComponent implements OnInit {
       this.codeEditor.setTheme(this.themes[0].actual_name);
       this.codeEditor.getSession().setMode("ace/mode/c_cpp");
       this.codeEditor.setShowFoldWidgets(true);
-      this.editorBeautify = ace.require('ace/ext/beautify');
+      ace.require('ace/ext/beautify');
       this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
+  }
+
+  ngOnDestroy() {
+    this.subscription1.unsubscribe();
   }
 
   /**
    * @description
-   *  set the theme based on selection
+   *  set code for a specific file for students
+   */
+  public updateFileData(file: File): void {
+    if(this.files.find(element => element.name == file.name)==undefined)
+    {
+      var tempFile = new File(file.name,file.data);
+      this.files.push(tempFile);
+    }
+    var temp = this.files.find(element => element.name == file.name);
+    temp.data = file.data;
+    if(this.currentFile == file.name)
+    {
+      this.codeEditor.setValue(temp.data);
+    }
+  }
+
+  /**
+   * @description
+   *  change the code depending on file selected
    */
   public changeCurrentFile(currFile: string): void {
     if (this.currentFile!=currFile) {
@@ -74,10 +98,8 @@ export class StudentCodeEditorComponent implements OnInit {
       {
         var tempFile = new File(this.currentFile,"");
         this.files.push(tempFile);
-        //console.log("added new session element")
       }
       this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
-      //console.log("changed session to "+this.currentFile);
     }
   }
 

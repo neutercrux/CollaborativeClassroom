@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-//import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
 import { CurrentFileService } from '../current-file.service';
+import { Subscription } from 'rxjs';
+import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
+import { File } from '../file';
 
 @Component({
   selector: 'app-file-explorer',
@@ -10,34 +11,43 @@ import { CurrentFileService } from '../current-file.service';
 })
 export class FileExplorerComponent implements OnInit {
 
-  //subscription1: Subscription;
   private files: string[] = [];
-  //private codeString;
+  subscription1: Subscription;
+  @Input() private isStudent: boolean;
   private currentFile: string;
-  constructor(/* private pubSub: NgxPubSubService,*/ private _currentFile: CurrentFileService) { }
+  constructor(private pubsub: NgxPubSubService,private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
-    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.currentFile = currentOpenFile)
-    this.files.push("New File");
-    this.files.push("file1");
-    this.files.push("file2");
-    this.files.push("file3");
-    // this.subscription1 = this.pubSub.subscribe('randomLast',
-    //                             data => this.codeString = data);
+    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.currentFile = currentOpenFile);
+    if(this.isStudent)
+    {
+      this.subscription1 = this.pubsub.subscribe('randomLast',data => this.addFile(data));
+    }
+    else
+    {
+      this.files.push("New File");
+      this.files.push("file1");
+      this.files.push("file2");
+      this.files.push("file3");
+    }
   }
 
   ngOnDestroy() {
-    //this.subscription1.unsubscribe();
+    this.subscription1.unsubscribe();
   }
 
-  addFile(file: string)
+
+
+  addFile(file: File)
   {
-    this.files.push(file);
+    if(this.files.find(element => element == file.name)==undefined)
+    {
+      this.files.push(file.name);
+    }
   }
 
   changeCurrFile(file: string)
   {
-    //console.log(file);
     this._currentFile.changeCurrentFile(file);
   }
 }

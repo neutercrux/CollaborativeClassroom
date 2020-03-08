@@ -93,10 +93,8 @@ export class CodeEditorComponent implements OnInit {
       {
         var tempFile = new File(this.currentFile,"");
         this.files.push(tempFile);
-        //console.log("added new session element")
       }
       this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
-      //console.log("changed session to "+this.currentFile);
     }
   }
 
