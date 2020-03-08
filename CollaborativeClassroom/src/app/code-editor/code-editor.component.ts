@@ -43,7 +43,7 @@ export class CodeEditorComponent implements OnInit {
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   timer;
   sess;
-  latestEvent = 'randomLast';
+  // latestEvent = 'randomLast';
   response: any;
 
   constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService) { }
@@ -67,6 +67,8 @@ export class CodeEditorComponent implements OnInit {
       var temp = new File(this.currentFile,"");
       this.files.push(temp);
       this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
+      this.pubsub.publishWithLast('randomLast', this.files.find(element => element.name == this.currentFile));
+      console.log(this.files.find(element => element.name == this.currentFile));
   }
 
   publish() {
@@ -74,7 +76,8 @@ export class CodeEditorComponent implements OnInit {
     if(this.sess!=new_sess)
     {
       this.sess = new_sess;
-      this.pubsub.publishWithLast(this.latestEvent, this.sess);
+      this.files.find(element => element.name == this.currentFile).data = this.sess;
+      this.pubsub.publishWithLast('randomLast', this.files.find(element => element.name == this.currentFile));
     }
     
   }

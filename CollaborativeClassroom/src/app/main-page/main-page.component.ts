@@ -13,7 +13,6 @@ export class MainPageComponent implements OnInit {
 
   ngOnInit() {
     this.isStudent = ("student" == sessionStorage.getItem("designation"));
-    console.log(sessionStorage.getItem("designation"));
   }
 
 }

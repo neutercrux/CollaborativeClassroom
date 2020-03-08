@@ -49,7 +49,7 @@ export class StudentCodeEditorComponent implements OnInit {
 
   ngOnInit() {
     this.getLangs();
-    this.subscription1 = this.pubsub.subscribe('randomLast',data => this.updateFileData(data));
+    
   }
 
   ngAfterViewInit() {
@@ -61,7 +61,8 @@ export class StudentCodeEditorComponent implements OnInit {
       this.codeEditor.getSession().setMode("ace/mode/c_cpp");
       this.codeEditor.setShowFoldWidgets(true);
       ace.require('ace/ext/beautify');
-      this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
+      this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
+      this.subscription1 = this.pubsub.subscribe('randomLast',data => this.updateFileData(data));
   }
 
   ngOnDestroy() {
@@ -73,6 +74,7 @@ export class StudentCodeEditorComponent implements OnInit {
    *  set code for a specific file for students
    */
   public updateFileData(file: File): void {
+    console.log(this.files);
     if(this.files.find(element => element.name == file.name)==undefined)
     {
       var tempFile = new File(file.name,file.data);
@@ -80,7 +82,7 @@ export class StudentCodeEditorComponent implements OnInit {
     }
     var temp = this.files.find(element => element.name == file.name);
     temp.data = file.data;
-    if(this.currentFile == file.name)
+    //if(this.currentFile == file.name)
     {
       this.codeEditor.setValue(temp.data);
     }

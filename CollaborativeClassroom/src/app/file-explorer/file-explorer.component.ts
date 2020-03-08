@@ -42,6 +42,7 @@ export class FileExplorerComponent implements OnInit {
   {
     if(this.files.find(element => element == file.name)==undefined)
     {
+      console.log("adding new file " + file.name);
       this.files.push(file.name);
     }
   }
