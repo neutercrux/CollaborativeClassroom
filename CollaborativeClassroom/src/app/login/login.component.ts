@@ -24,8 +24,8 @@ export class LoginComponent implements OnInit {
     const password = target.querySelector('#password').value;
     this.Auth.getUserDetails(usn,password).subscribe(data => {
       this.response = JSON.parse(JSON.stringify(data));
-      console.log(this.response[0].designation);
-      sessionStorage.setItem("designation",this.response[0].designation);
+      console.log(this.response.body[0].designation);
+      sessionStorage.setItem("designation",this.response.body[0].designation);
       if(this.response.status==200){
         this.router.navigate(['/mainPage'])
       }

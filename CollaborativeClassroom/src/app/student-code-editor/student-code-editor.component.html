@@ -1,1 +1,58 @@
-<p>student-code-editor works!</p>
+<div class="container h-100 mt-4">
+    
+    <!-- languages & theme -->
+    <div class="row mb-2 justify-content-center">
+        <!-- languages select -->
+        <div class="input-group col-3 mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="languages-select">Languages</label>
+            </div>
+            <select class="custom-select" id="languages-select" (change)="setLanguage(languagesSelect.value)" #languagesSelect>
+                <option *ngFor="let lang of langArray" [value]= "lang" >{{lang}}</option>
+            </select>
+        </div>
+        <!-- theme radio buttons -->
+        <div class="input-group col-3 mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="themes-select">Themes</label>
+            </div>
+            <select class="custom-select" id="themes-select"(change)='setTheme(themesSelect.value)' #themesSelect>
+                <option *ngFor="let theme of themes" [value]="theme.name" >{{theme.name}}</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- the code editor -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="code-editor" #codeEditor></div>
+        </div>
+    </div>
+
+    <!-- run, clear & beautify buttons -->
+    <div class="row mb-4 justify-content-center mx-4">
+        <div class="col-4 col-lg-2 col-md-3 col-sm-4 w-75">
+            <button type="button" class="btn btn-dark btn-sm btn-block px-4 mx-2" (click)="runCode()">
+                Run
+            </button>
+        </div>
+        <div class="col-4 col-lg-2 col-md-3 col-sm-4 w-75">
+            <button type="button" class="btn btn-primary btn-sm btn-block px-4 mx-2" (click)="clearCode()">
+                Clear
+            </button>
+        </div>
+        <!-- <div class="col-4 col-lg-2 col-md-3 col-sm-4 w-75">
+            <button type="button" class="btn btn-beautify btn-sm btn-block px-4 mx-2" (click)="beautifyContent()">
+                Beautify
+            </button>
+        </div> -->
+    </div>
+
+    <!-- output box -->
+    <div class="row mt-4">
+        <div class="col">
+            <div class="label-box border"><span class="mx-4 font-weight-light">Output</span></div>
+            <textarea [value]="outputString" class="form-control output" rows="6" disabled="true" aria-label="output-textarea"></textarea>
+        </div>
+    </div>
+</div>

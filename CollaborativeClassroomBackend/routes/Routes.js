@@ -1,7 +1,7 @@
 module.exports = function(app) {
     var webapp = require('../controller/Controller');
 
-app.route('/api/v1/users/:usn/:password')
+app.route('/api/v1/users/')
     .post(webapp.loginUser)
 app.route('/api/v1/register')
     .post(webapp.signUp)
