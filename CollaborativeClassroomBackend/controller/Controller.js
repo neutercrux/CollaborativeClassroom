@@ -6,6 +6,7 @@ lodash = require('lodash'),
 lodashPick = require('lodash.pick'),
 axios = require('axios'),
 https = require('https'),
+client = require('../socket'),
 myLangMap = require('../language')
 
 var jDoodleClientID = "fe0e6da657e816473e2dece16a3851ca";
@@ -134,9 +135,6 @@ exports.runCode = function(req,res) {
         requ.write(runRequestBody)
         requ.end()
                      
-    }
+}
  
         
-
-
-// }

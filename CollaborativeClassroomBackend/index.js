@@ -3,8 +3,10 @@ app = express(),
 port = process.env.PORT || 3000,
 mongoose = require('mongoose'),
 User = require('./models/Model'), //created model loading here
-bodyParser = require('body-parser');
-langMap = require('./language')
+bodyParser = require('body-parser'),
+http = require('http').Server(app),
+io = require('socket.io')(http),
+langMap = require('./language');
   
 app.use(bodyParser.urlencoded({limit : '50MB', extended: true }));
 app.use(bodyParser.json({limit:'50MB'}));
@@ -19,7 +21,12 @@ app.use(function(req,res,next){
 var routes = require('./routes/Routes'); //importing route
 routes(app); //register the route
 
+io.on('connection',function(socket){
+  console.log('connected')
+  
+})
 
-app.listen(port);
+http.listen(port,function(){
+  console.log('RESTful API server started on: ' + port);
+});
 
-console.log('RESTful API server started on: ' + port);

@@ -24,6 +24,8 @@ import 'brace/theme/monokai';
 import 'brace/mode/html';
 import 'brace/mode/javascript';
 import 'brace/mode/text';
+import { Observable } from 'rxjs';
+import { WebsocketService } from '../websocket.service';
 
 @Component({
   selector: 'app-code-editor',
@@ -45,11 +47,13 @@ export class CodeEditorComponent implements OnInit {
   sess;
   // latestEvent = 'randomLast';
   response: any;
-
-  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService) { }
+  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService,private webSocketService:WebsocketService) { }
 
   ngOnInit() {
     this.getLangs();
+    this.webSocketService.listen('test data').subscribe((data) => {
+        console.log(data)
+    })
   }
 
   ngAfterViewInit() {
@@ -181,5 +185,6 @@ export class CodeEditorComponent implements OnInit {
   public selectLang(input){
       this.lang = input;
   }
+
   
 }
