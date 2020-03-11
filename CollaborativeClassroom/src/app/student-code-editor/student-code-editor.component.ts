@@ -56,6 +56,8 @@ export class StudentCodeEditorComponent implements OnInit {
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
     this.code.messages.subscribe(msg => {
       console.log(msg);
+      var temp = new File(msg.filename,msg.filecode)
+      this.updateFileData(temp);
     })
   }
 
@@ -64,17 +66,17 @@ export class StudentCodeEditorComponent implements OnInit {
 
   public updateFileData(file): void {
     console.log(this.files);
-    // if(this.files.find(element => element.name == file.name)==undefined)
-    // {
-    //   var tempFile = new File(file.name,file.data);
-    //   this.files.push(tempFile);
-    // }
-    // var temp = this.files.find(element => element.name == file.name);
-    // temp.data = file.data;
-    // if(this.currentFile == file.name)
-    // {
-    //   this.codeEditor.setValue(temp.data);
-    // }
+    if(this.files.find(element => element.name == file.name)==undefined)
+    {
+      var tempFile = new File(file.name,file.data);
+      this.files.push(tempFile);
+    }
+    var temp = this.files.find(element => element.name == file.name);
+    temp.data = file.data;
+    if(this.currentFile == file.name)
+    {
+      this.codeEditor.setValue(temp.data);
+    }
   }
 
   public changeCurrentFile(currFile: string): void {

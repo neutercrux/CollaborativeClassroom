@@ -65,8 +65,9 @@ export class CodeEditorComponent implements OnInit {
     if(this.sess!=new_sess)
     {
       this.sess = new_sess;
-      this.files.find(element => element.name == this.currentFile).data = this.sess;
-      this.code.sendCode(this.sess);
+      let temp = this.files.find(element => element.name == this.currentFile);
+      temp.data = this.sess;
+      this.code.sendFile(temp);
     }
   }
 
@@ -79,7 +80,9 @@ export class CodeEditorComponent implements OnInit {
         var tempFile = new File(this.currentFile,"");
         this.files.push(tempFile);
       }
-      this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
+      let temp = this.files.find(element => element.name == this.currentFile);
+      this.codeEditor.setValue(temp.data);
+      this.code.sendFile(temp);
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CurrentFileService } from '../current-file.service';
 import { File } from '../file';
+import { CodeService } from '../code.service';
 
 @Component({
   selector: 'app-file-explorer',
@@ -12,13 +13,16 @@ export class FileExplorerComponent implements OnInit {
   private files: string[] = [];
   @Input() private isStudent: boolean;
   private currentFile: string;
-  constructor(private _currentFile: CurrentFileService) { }
+  constructor(private code: CodeService,private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.currentFile = currentOpenFile);
     if(this.isStudent)
     {
-
+      this.code.messages.subscribe(msg => {
+        console.log(msg);
+        this.addFile(msg.filename);
+      })
     }
     else
     {
@@ -34,12 +38,12 @@ export class FileExplorerComponent implements OnInit {
 
 
 
-  addFile(file: File)
+  addFile(filename: string)
   {
-    if(this.files.find(element => element == file.name)==undefined)
+    if(this.files.find(element => element == filename)==undefined)
     {
-      console.log("adding new file " + file.name);
-      this.files.push(file.name);
+      console.log("adding new file " + filename);
+      this.files.push(filename);
     }
   }
 

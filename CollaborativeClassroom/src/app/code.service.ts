@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { WebsocketService } from './websocket.service';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { File } from './file';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class CodeService {
 
   // Our simplified interface for sending
   // messages back to our socket.io server
-  sendCode(code) {
-    this.messages.next(code);
+  sendFile(code: File) {
+    this.messages.next({ 'filename' : code.name, 'filecode' : code.data});
   }
 
 }

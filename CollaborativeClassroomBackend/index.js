@@ -34,8 +34,7 @@ io.on("connection", socket => {
   // the contents of that message and then echo it back to our client
   // using `io.emit()`
   socket.on("message", message => {
-    console.log("Message Received: " + message);
-    io.emit("message", { type: "new-message", text: message });
+    io.emit("message", message);
   });
 });
 
