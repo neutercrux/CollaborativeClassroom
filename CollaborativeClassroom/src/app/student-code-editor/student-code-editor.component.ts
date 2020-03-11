@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
-import { Subscription } from 'rxjs';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
@@ -25,6 +24,8 @@ import 'brace/theme/monokai';
 import 'brace/mode/html';
 import 'brace/mode/javascript';
 import 'brace/mode/text';
+import { WebsocketService } from '../websocket.service';
+import { CodeService } from '../code.service';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -34,7 +35,6 @@ import 'brace/mode/text';
 export class StudentCodeEditorComponent implements OnInit {
 
   private codeEditor: ace.Ace.Editor;
-  subscription1: Subscription;
   private themes = THEMES;
   private files: File[] = [];
   private currentFile: string;
@@ -45,55 +45,40 @@ export class StudentCodeEditorComponent implements OnInit {
   latestEvent = 'randomLast';
   response: any;
 
-  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService) { }
+  constructor(private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
-    
   }
 
   ngAfterViewInit() {
-      ace.require('ace/ext/language_tools');
-      const element = this.codeEditorElmRef.nativeElement;
-      const editorOptions = this.getEditorOptions();
-      this.codeEditor = ace.edit(element, editorOptions);
-      this.codeEditor.setTheme(this.themes[0].actual_name);
-      this.codeEditor.getSession().setMode("ace/mode/c_cpp");
-      this.codeEditor.setShowFoldWidgets(true);
-      ace.require('ace/ext/beautify');
-      this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
-      this.subscription1 = this.pubsub.subscribe('randomLast',data => this.updateFileData(data));
+    this.initializeEditor();
+    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
+    this.code.messages.subscribe(msg => {
+      console.log(msg);
+    })
   }
 
   ngOnDestroy() {
-    this.subscription1.unsubscribe();
   }
 
-  /**
-   * @description
-   *  set code for a specific file for students
-   */
-  public updateFileData(file: File): void {
+  public updateFileData(file): void {
     console.log(this.files);
-    if(this.files.find(element => element.name == file.name)==undefined)
-    {
-      var tempFile = new File(file.name,file.data);
-      this.files.push(tempFile);
-    }
-    var temp = this.files.find(element => element.name == file.name);
-    temp.data = file.data;
-    //if(this.currentFile == file.name)
-    {
-      this.codeEditor.setValue(temp.data);
-    }
+    // if(this.files.find(element => element.name == file.name)==undefined)
+    // {
+    //   var tempFile = new File(file.name,file.data);
+    //   this.files.push(tempFile);
+    // }
+    // var temp = this.files.find(element => element.name == file.name);
+    // temp.data = file.data;
+    // if(this.currentFile == file.name)
+    // {
+    //   this.codeEditor.setValue(temp.data);
+    // }
   }
 
-  /**
-   * @description
-   *  change the code depending on file selected
-   */
   public changeCurrentFile(currFile: string): void {
-    if (this.currentFile!=currFile) {
+    if ((this.currentFile!=currFile)&&(this.files.length > 0)) {
       this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
       this.currentFile = currFile;
       if(this.files.find(element => element.name == this.currentFile)==undefined)
@@ -108,12 +93,11 @@ export class StudentCodeEditorComponent implements OnInit {
   getLangs(){
     this._codeEditorService.getLangs().subscribe(data=>{
         this.langArray = data.body['langMap'];
-        console.log(this.langArray)
     });
   }
 
   /************************************************************************EDITOR FUNCTIONS************************************************/
-  // missing propery on EditorOptions 'enableBasicAutocompletion' so this is a wolkaround still using ts
+  // missing propery on EditorOptions 'enableBasicAutocompletion' so this is a workaround still using ts
   private getEditorOptions(): Partial<ace.Ace.EditorOptions> & { enableBasicAutocompletion?: boolean; } {
       const basicEditorOptions: Partial<ace.Ace.EditorOptions> = {
           highlightActiveLine: true,
@@ -122,6 +106,17 @@ export class StudentCodeEditorComponent implements OnInit {
       };
       const extraEditorOptions = { enableBasicAutocompletion: true };
       return Object.assign(basicEditorOptions, extraEditorOptions);
+  }
+
+  initializeEditor() {
+    ace.require('ace/ext/language_tools');
+    const element = this.codeEditorElmRef.nativeElement;
+    const editorOptions = this.getEditorOptions();
+    this.codeEditor = ace.edit(element, editorOptions);
+    this.codeEditor.setTheme(this.themes[0].actual_name);
+    this.codeEditor.getSession().setMode("ace/mode/c_cpp");
+    this.codeEditor.setShowFoldWidgets(true);
+    ace.require('ace/ext/beautify');
   }
 
   /**

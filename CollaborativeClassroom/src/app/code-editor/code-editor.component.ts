@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
@@ -24,8 +23,8 @@ import 'brace/theme/monokai';
 import 'brace/mode/html';
 import 'brace/mode/javascript';
 import 'brace/mode/text';
-import { Observable } from 'rxjs';
 import { WebsocketService } from '../websocket.service';
+import { CodeService } from '../code.service';
 
 @Component({
   selector: 'app-code-editor',
@@ -35,7 +34,6 @@ import { WebsocketService } from '../websocket.service';
 export class CodeEditorComponent implements OnInit {
 
   private codeEditor: ace.Ace.Editor;
-  private editorBeautify;
   private themes = THEMES;
   private files: File[] = [];
   private currentFile: string;
@@ -45,34 +43,21 @@ export class CodeEditorComponent implements OnInit {
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   timer;
   sess;
-  // latestEvent = 'randomLast';
   response: any;
-  constructor(private _codeEditorService:CodeEditorService,private pubsub: NgxPubSubService, private _currentFile: CurrentFileService,private webSocketService:WebsocketService) { }
+
+  constructor(private code : CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService,private webSocketService:WebsocketService) { }
 
   ngOnInit() {
     this.getLangs();
-    this.webSocketService.listen('test data').subscribe((data) => {
-        console.log(data)
-    })
+    
   }
 
   ngAfterViewInit() {
-      ace.require('ace/ext/language_tools');
-      const element = this.codeEditorElmRef.nativeElement;
-      const editorOptions = this.getEditorOptions();
-      this.codeEditor = ace.edit(element, editorOptions);
-      this.codeEditor.setTheme(this.themes[0].actual_name);
-      this.codeEditor.getSession().setMode("ace/mode/c_cpp");
-      this.codeEditor.setShowFoldWidgets(true);
-      // hold reference to beautify extension
-      this.editorBeautify = ace.require('ace/ext/beautify');
-      this.sess = this.codeEditor.getValue();
-      this.timer = setInterval(() => { this.publish(); }, 2000);
-      var temp = new File(this.currentFile,"");
-      this.files.push(temp);
-      this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
-      this.pubsub.publishWithLast('randomLast', this.files.find(element => element.name == this.currentFile));
-      console.log(this.files.find(element => element.name == this.currentFile));
+    this.initializeEditor();
+    this.timer = setInterval(() => { this.publish(); }, 2000);
+    var temp = new File(this.currentFile,"");
+    this.files.push(temp);
+    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
   }
 
   publish() {
@@ -81,15 +66,10 @@ export class CodeEditorComponent implements OnInit {
     {
       this.sess = new_sess;
       this.files.find(element => element.name == this.currentFile).data = this.sess;
-      this.pubsub.publishWithLast('randomLast', this.files.find(element => element.name == this.currentFile));
+      this.code.sendCode(this.sess);
     }
-    
   }
 
-  /**
-   * @description
-   *  set the theme based on selection
-   */
   public changeCurrentFile(currFile: string): void {
     if (this.currentFile!=currFile) {
       this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
@@ -110,7 +90,7 @@ export class CodeEditorComponent implements OnInit {
   }
 
   /************************************************************************EDITOR FUNCTIONS************************************************/
-  // missing propery on EditorOptions 'enableBasicAutocompletion' so this is a wolkaround still using ts
+  // missing propery on EditorOptions 'enableBasicAutocompletion' so this is a workaround still using ts
   private getEditorOptions(): Partial<ace.Ace.EditorOptions> & { enableBasicAutocompletion?: boolean; } {
       const basicEditorOptions: Partial<ace.Ace.EditorOptions> = {
           highlightActiveLine: true,
@@ -119,6 +99,19 @@ export class CodeEditorComponent implements OnInit {
       };
       const extraEditorOptions = { enableBasicAutocompletion: true };
       return Object.assign(basicEditorOptions, extraEditorOptions);
+  }
+
+  initializeEditor() {
+    ace.require('ace/ext/language_tools');
+    const element = this.codeEditorElmRef.nativeElement;
+    const editorOptions = this.getEditorOptions();
+    this.codeEditor = ace.edit(element, editorOptions);
+    this.codeEditor.setTheme(this.themes[0].actual_name);
+    this.codeEditor.getSession().setMode("ace/mode/c_cpp");
+    this.codeEditor.setShowFoldWidgets(true);
+    // hold reference to beautify extension
+    ace.require('ace/ext/beautify');
+    this.sess = this.codeEditor.getValue();
   }
 
   /**

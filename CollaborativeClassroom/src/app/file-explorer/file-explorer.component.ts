@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CurrentFileService } from '../current-file.service';
-import { Subscription } from 'rxjs';
-import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 import { File } from '../file';
 
 @Component({
@@ -12,16 +10,15 @@ import { File } from '../file';
 export class FileExplorerComponent implements OnInit {
 
   private files: string[] = [];
-  subscription1: Subscription;
   @Input() private isStudent: boolean;
   private currentFile: string;
-  constructor(private pubsub: NgxPubSubService,private _currentFile: CurrentFileService) { }
+  constructor(private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.currentFile = currentOpenFile);
     if(this.isStudent)
     {
-      this.subscription1 = this.pubsub.subscribe('randomLast',data => this.addFile(data));
+
     }
     else
     {
@@ -33,7 +30,6 @@ export class FileExplorerComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.subscription1.unsubscribe();
   }
 
 

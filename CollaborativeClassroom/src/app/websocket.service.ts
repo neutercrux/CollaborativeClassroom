@@ -1,29 +1,45 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
-import { Observable } from 'rxjs';
-
+import { Observable,Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
+  // Our socket connection
+  private socket;
+  ws_url = "http://localhost:3000";
 
-  socket:any 
+  constructor() { }
 
-  constructor() {
-    this.socket = io("ws://localhost:3000")
-    console.log(this.socket)
-   }
+  connect(): Subject<MessageEvent> {
 
-   listen(eventName:string){
-     return new Observable((subscriber) => {
-        this.socket.on(eventName,(data)=>{
-          subscriber.next(data)
-          console.log(data)
+    this.socket = io(this.ws_url);
+
+    // We define our observable which will observe any incoming messages
+    // from our socket.io server.
+    let observable = new Observable(observer => {
+        this.socket.on('message', (data) => {
+          console.log("Received message from Websocket Server");
+          observer.next(data);
         })
-     });
-   }
-   emit(eventName:string,data:any){
-     this.socket.emit(eventName,data)
-   }
+        return () => {
+          this.socket.disconnect();
+        }
+    });
+
+    // We define our Observer which will listen to messages
+    // from our other components and send messages back to our
+    // socket server whenever the `next()` method is called.
+    let observer = {
+        next: (data: Object) => {
+            this.socket.emit('message', JSON.stringify(data));
+        },
+    };
+
+    // we return our Subject which is a combination
+    // of both an observer and observable.
+    return Subject.create(observer, observable);
+  }
+
 }

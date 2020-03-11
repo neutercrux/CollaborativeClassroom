@@ -17,22 +17,3 @@
         </div>
     </ng-template>
 </div>
-<div class="row">
-    <div class="col-2">
-        <app-file-explorer [isStudent] = "!isStudent" ></app-file-explorer>
-    </div>
-    <div *ngIf="isStudent; then teacherView else studentView"></div>
-    <ng-template #studentView>
-        <div class="col">
-            <app-student-code-editor></app-student-code-editor>
-        </div>
-        <!-- <div class="col">
-            <app-notes-editor></app-notes-editor>
-        </div> -->
-    </ng-template>
-    <ng-template #teacherView>
-        <div class="col">
-            <app-code-editor></app-code-editor>
-        </div>
-    </ng-template>
-</div>
