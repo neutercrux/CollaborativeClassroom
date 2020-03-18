@@ -10,4 +10,6 @@ app.route('/api/v1/langs')
     .get(webapp.getLangs)
 app.route('/api/v1/run')
     .post(webapp.runCode)
+app.route('/api/v1/ip')
+    .get(webapp.getIpAdd)
 }

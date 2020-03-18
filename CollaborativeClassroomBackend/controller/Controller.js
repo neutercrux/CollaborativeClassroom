@@ -6,6 +6,7 @@ lodash = require('lodash'),
 lodashPick = require('lodash.pick'),
 axios = require('axios'),
 https = require('https'),
+os = require('os'),
 //client = require('../socket'),
 myLangMap = require('../language')
 
@@ -136,5 +137,30 @@ exports.runCode = function(req,res) {
         requ.end()
                      
 }
- 
+
+exports.getIpAdd = function(req,res){
+    var ifaces = os.networkInterfaces();
+
+    Object.keys(ifaces).forEach(function (ifname) {
+        var alias = 0;
+
+        ifaces[ifname].forEach(function (iface) {
+            if ('IPv4' !== iface.family || iface.internal !== false) {
+            // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+            return;
+            }
+
+            if (alias >= 1 && ifname=="wlp19s0") {
+            // this single interface has multiple ipv4 addresses
+            console.log(ifname + ':' + alias, iface.address);
+                return res.status(200).send({'ifname':ifname,'address':iface.address})
+            } else {
+            // this interface has only one ipv4 adress
+            console.log(ifname, iface.address);
+            return res.status(200).send({'ifname':ifname,'address':iface.address})
+            }
+            ++alias;
+        });
+    });
+}
         

@@ -1,0 +1,25 @@
+<p>Connect to IP {{address}}</p>
+<mat-grid-list cols="2" rowHeight="1:1">
+    <mat-grid-tile>
+        <ul class="card" (click)="viewData($event)">
+            <div class="card-title">
+          <img class="hexagon" >
+                <span class="title">Title</span>
+            </div>
+            <div class="description">
+                description
+            </div>
+        </ul>
+    </mat-grid-tile>
+    <mat-grid-tile>
+        <ul class="card" (click)="startSession($event)">
+            <div class="card-title">
+          <img class="hexagon" >
+                <span class="title">Title</span>
+            </div>
+            <div class="description">
+                description
+            </div>
+        </ul>
+    </mat-grid-tile>
+  </mat-grid-list>
