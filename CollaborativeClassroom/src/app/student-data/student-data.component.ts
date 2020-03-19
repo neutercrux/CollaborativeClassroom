@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-student-data',
@@ -16,7 +17,7 @@ export class StudentDataComponent implements OnInit {
   public dataArr = []
   public dataSource;
   displayedColumns: string[] = ['position','name','email','usn'];
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
@@ -91,7 +92,10 @@ export class StudentDataComponent implements OnInit {
     this.fileImportInput.nativeElement.value = "";
     this.csvRecords = [];
   }
-
+  returnMainPage(event){
+    event.preventDefault()
+    this.router.navigate(['/mainPage'])
+  }
 }
 
 export class CSVRecord {
