@@ -1,25 +1,17 @@
-<p>Connect to IP {{address}}</p>
-<mat-grid-list cols="2" rowHeight="1:1">
-    <mat-grid-tile>
-        <ul class="card" (click)="viewData($event)">
-            <div class="card-title">
-          <img class="hexagon" >
-                <span class="title">Title</span>
-            </div>
-            <div class="description">
-                description
-            </div>
-        </ul>
-    </mat-grid-tile>
-    <mat-grid-tile>
-        <ul class="card" (click)="startSession($event)">
-            <div class="card-title">
-          <img class="hexagon" >
-                <span class="title">Title</span>
-            </div>
-            <div class="description">
-                description
-            </div>
-        </ul>
-    </mat-grid-tile>
-  </mat-grid-list>
+<div class="container-md p-3 my-3">
+    <h1 class="display-3">Connect to IP {{address}}</h1>
+</div>
+<div class="container-lg p-5 my-3">
+  <div class="card-deck">
+    <div class="card bg-info">
+        <div class="card-body text-center" (click)="viewData($event)">
+          <p class="card-text">View Student Database</p>
+        </div>
+      </div>
+      <div class="card bg-info">
+        <div class="card-body text-center" (click)="startSession($event)">
+          <p class="card-text">Start Session</p>
+        </div>
+      </div>
+  </div>
+</div>
