@@ -69,13 +69,8 @@ export class StudentCodeEditorComponent implements OnInit {
   ngOnDestroy() {
   }
 
-<<<<<<< Updated upstream
   public updateFileData(file: File): void {
     console.log(this.files);
-=======
-  public updateFileData(file): void {
-    console.log(file);
->>>>>>> Stashed changes
     if(this.files.find(element => element.name == file.name)==undefined)
     {
       var tempFile = new File(file.name,file.data);

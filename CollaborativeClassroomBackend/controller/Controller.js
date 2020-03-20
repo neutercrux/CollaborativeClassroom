@@ -15,10 +15,10 @@ var jDoodleClientSecret = "3cc1302bbda2100b2426ad3a05fa246ddca4cfab3282a9df6694e
 
 exports.signUp = function (req, res) {
     var desig;
-    var re = /(a|b)*abb/i;
+    var re = "01UF110VR"; ///(a|b)*abb/i;
 
     // console.log(re.test(req.body.usn))
-    if(re.test(req.body.usn))
+    if(req.body.usn==re)//re.test(req.body.usn))
         desig = "teacher"
     else
         desig = "student"
@@ -150,7 +150,7 @@ exports.getIpAdd = function(req,res){
             return;
             }
 
-            if (alias >= 1 && ifname=="wlp19s0") {
+            if (alias >= 1 && ifname=="wlp2s0") {
             // this single interface has multiple ipv4 addresses
             console.log(ifname + ':' + alias, iface.address);
                 return res.status(200).send({'ifname':ifname,'address':iface.address})
