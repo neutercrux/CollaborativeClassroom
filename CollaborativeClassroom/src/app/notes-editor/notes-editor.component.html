@@ -1,1 +1,21 @@
-<p>For aisha</p>
+<div class="mt-5 mr-5">
+    <textarea #newNoteText class="form-control " aria-label="With textarea"></textarea>
+
+    <div class="input-group mt-2">
+        <input type="text" class="form-control" #newNoteLine
+        [value]='lineNumber+1' aria-label="Add new Note" 
+        aria-describedby="button-file">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" (click)='addNote(newNoteText.value, newNoteLine.value)' type="button" id="button-file">+</button>
+        </div>
+    </div>
+</div>
+
+<ul class="list-group mt-5 mr-5">
+    <div *ngFor="let note of notes">
+        <li class="list-group-item d-flex justify-content-between mt-2 align-items-center bg-warning">
+            <span class="badge badge-light badge-pill">Line {{note.lineNumber}}</span>
+            {{note.text}}
+        </li>
+    </div>
+</ul>

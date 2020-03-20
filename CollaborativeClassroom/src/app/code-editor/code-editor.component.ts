@@ -38,12 +38,12 @@ export class CodeEditorComponent implements OnInit {
   private files: File[] = [];
   private currentFile: string;
   private langArray;
-  private lang;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
-  timer;
-  sess;
   response: any;
+  lang: string;
+  timer;
+  sess: string;
 
   constructor(private code : CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService,private webSocketService:WebsocketService) { }
 

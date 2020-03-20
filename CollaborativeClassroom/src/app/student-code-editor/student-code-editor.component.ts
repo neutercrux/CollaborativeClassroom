@@ -25,6 +25,7 @@ import 'brace/mode/javascript';
 import 'brace/mode/text';
 import { WebsocketService } from '../websocket.service';
 import { CodeService } from '../code.service';
+import { CurrentLineService } from '../current-line.service';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -38,13 +39,14 @@ export class StudentCodeEditorComponent implements OnInit {
   private files: File[] = [];
   private currentFile: string = "";
   private langArray;
-  private lang;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
-  latestEvent = 'randomLast';
   response: any;
+  currentLine: number;
+  lineTimer;
+  lang: string;
 
-  constructor(private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(private _currentLine: CurrentLineService,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
@@ -53,9 +55,12 @@ export class StudentCodeEditorComponent implements OnInit {
   ngAfterViewInit() {
     this.initializeEditor();
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
+    this._currentLine.currentLine.subscribe();
+    this.lineTimer = setInterval(()=>{ 
+      this.changeCurrentLine()
+    }, 1000);
     this.code.messages.subscribe(msg => {
       msg = JSON.parse(msg);
-      console.log(msg.filename + " " + msg.filecode);
       var temp = new File(msg.filename,msg.filecode);
       this.updateFileData(temp);
     })
@@ -90,6 +95,16 @@ export class StudentCodeEditorComponent implements OnInit {
         this.files.push(tempFile);
       }
       this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
+    }
+  }
+
+  changeCurrentLine()
+  {
+    let temp = this.codeEditor.selection.getCursor().row;
+    if(this.currentLine!= temp)
+    {
+      this.currentLine = temp;
+      this._currentLine.changeCurrentLine(this.currentLine);
     }
   }
 
