@@ -6,8 +6,9 @@ import { HttpClient, HttpParams} from '@angular/common/http';
 })
 export class AuthService {
 
-  private _url_login: string = "http://192.168.0.107:3000/api/v1/users";
-  private _url_register: string = "http://192.168.0.107:3000/api/v1/register";
+  private _url_login: string = "http://localhost:3000/api/v1/users";
+  private _url_register: string = "http://localhost:3000/api/v1/register";
+  private _url_ip = "http://localhost:3000/api/v1/ip"
 
   constructor(private http : HttpClient) { }
 
@@ -23,5 +24,9 @@ export class AuthService {
       "email":email,
       "password":password
     },{observe : 'response'})
+  }
+
+  getIp(){
+    return this.http.get(this._url_ip,{observe : 'response'})
   }
 }

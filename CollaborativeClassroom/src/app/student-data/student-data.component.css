@@ -1,0 +1,24 @@
+.csv-file-chooser-section {
+    padding: 10px;
+    margin: 5%;
+    margin-top: 2%;
+    float: right;
+    text-align: center;
+  }
+  
+.csv-result-table {
+  margin: 10%;
+
+}
+
+table {
+  width: 70%;
+  /* margin-top: 20%; */
+}
+
+.mat-elevation-z8 {
+  margin-top: 10%;
+  margin-left: 15%;
+  width: 70%;
+  position: absolute;
+}

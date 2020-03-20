@@ -1,5 +1,5 @@
 html,body{height:100%;margin:0;padding:0;}
-body { background: url("/assets/Quizzes.jpg") repeat 0 0; background-size:100% 100%}
+/* body { background:  repeat 0 0; background-size:100% 100%} */
 body{background-position:center;background-repeat:no-repeat;min-height:100vh;font-family:'Roboto', sans-serif;}
 .app-header{justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:2;box-shadow:0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);}
 .login-wrapper{height:100%;}

@@ -8,7 +8,7 @@ import { Observable,Subject } from 'rxjs';
 export class WebsocketService {
   // Our socket connection
   private socket;
-  ws_url = "http://192.168.0.107:3000";
+  ws_url = "http://localhost:3000";
 
   constructor() { }
 
