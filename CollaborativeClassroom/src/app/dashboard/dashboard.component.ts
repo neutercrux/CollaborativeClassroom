@@ -24,6 +24,6 @@ export class DashboardComponent implements OnInit {
   }
   startSession(event){
     event.preventDefault()
-    this.router.navigate(['/session'])
+    this.router.navigate(['/mainPage'])
   }
 }

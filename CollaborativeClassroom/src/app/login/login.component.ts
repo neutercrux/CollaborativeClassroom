@@ -14,6 +14,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private Auth: AuthService,private router: Router) { }
   response: any;
+  desig:any;
   ngOnInit() {
   }
 
@@ -25,9 +26,13 @@ export class LoginComponent implements OnInit {
     this.Auth.getUserDetails(usn,password).subscribe(data => {
       this.response = JSON.parse(JSON.stringify(data));
       console.log(this.response.body[0].designation);
+      this.desig = this.response.body[0].designation
       sessionStorage.setItem("designation",this.response.body[0].designation);
-      if(this.response.status==200){
+      if(this.response.status==200 && this.desig=='student'){
         this.router.navigate(['/mainPage'])
+      }
+      else if(this.response.status==200 && this.desig=='teacher'){
+        this.router.navigate(['/dashboard'])
       }
       else{
         this.router.navigate(['/login'])

@@ -18,7 +18,6 @@ import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
 import { StudentCodeEditorComponent } from './student-code-editor/student-code-editor.component';
 import { DashboardComponent } from './dashboard/dashboard.component'
 import { StudentDataComponent } from './student-data/student-data.component';
-import { SessionComponent } from './session/session.component';
 
 @NgModule({
   declarations: [
@@ -31,8 +30,7 @@ import { SessionComponent } from './session/session.component';
     RegisterComponent,
     StudentCodeEditorComponent,
     DashboardComponent,
-    StudentDataComponent,
-    SessionComponent
+    StudentDataComponent 
   ],
   imports: [
     BrowserModule,

@@ -94,7 +94,7 @@ export class StudentDataComponent implements OnInit {
   }
   returnMainPage(event){
     event.preventDefault()
-    this.router.navigate(['/mainPage'])
+    this.router.navigate(['/dashboard'])
   }
 }
 
