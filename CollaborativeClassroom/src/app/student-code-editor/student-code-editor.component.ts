@@ -55,8 +55,8 @@ export class StudentCodeEditorComponent implements OnInit {
     this.initializeEditor();
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
     this.code.messages.subscribe(msg => {
-      console.log(msg);
-      var temp = new File(msg.filename,msg.filecode)
+      console.log(msg.filename + " " + msg.filecode);
+      var temp = new File(msg.filename,String(msg.filecode))
       this.updateFileData(temp);
     })
   }
@@ -64,8 +64,8 @@ export class StudentCodeEditorComponent implements OnInit {
   ngOnDestroy() {
   }
 
-  public updateFileData(file): void {
-    console.log(this.files);
+  public updateFileData(file: File): void {
+    console.log(file);
     if(this.files.find(element => element.name == file.name)==undefined)
     {
       var tempFile = new File(file.name,file.data);
