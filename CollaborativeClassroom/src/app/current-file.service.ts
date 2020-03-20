@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CurrentFileService {
 
-  private currentOpenFileSource = new BehaviorSubject<string>("New File");
+  private currentOpenFileSource = new BehaviorSubject<string>("");
   currentOpenFile = this.currentOpenFileSource.asObservable();
 
   constructor() { }

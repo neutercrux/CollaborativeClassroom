@@ -1,8 +1,26 @@
-<ul>
-    <li>
-        
-    </li>
-    <li *ngFor="let file of files" (click)='changeCurrFile(file)'>
-        {{file}}
-    </li>
-</ul>
+<div class="mt-4 ml-4">
+    <div *ngIf="!isStudent; then addFileInput"></div>
+    <ng-template #addFileInput>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" #newFile (keyup.enter)="addFile(newFile.value)"
+            (blur)="addFile(newFile.value)" placeholder="Add new File" aria-label="Add new File" 
+            aria-describedby="button-file">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" (click)='addFile(newFile.value)' type="button" id="button-file">+</button>
+            </div>
+        </div>
+    </ng-template>
+    <div *ngFor="let file of files">
+        <div *ngIf="currentFile == file; then activeFile else nonActiveFile"></div>
+            <ng-template #activeFile>
+                <button type="button" (click)='changeCurrFile(file)' class="list-group-item list-group-item-action active">
+                    {{file}}
+                </button>
+            </ng-template>
+            <ng-template #nonActiveFile>
+                <button type="button" (click)='changeCurrFile(file)' class="list-group-item list-group-item-action">
+                    {{file}}
+                </button>
+            </ng-template>
+    </div>
+</div>

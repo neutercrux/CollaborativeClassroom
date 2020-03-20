@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
@@ -37,7 +36,7 @@ export class StudentCodeEditorComponent implements OnInit {
   private codeEditor: ace.Ace.Editor;
   private themes = THEMES;
   private files: File[] = [];
-  private currentFile: string;
+  private currentFile: string = "";
   private langArray;
   private lang;
   private outputString: string = "";
@@ -55,8 +54,9 @@ export class StudentCodeEditorComponent implements OnInit {
     this.initializeEditor();
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
     this.code.messages.subscribe(msg => {
+      msg = JSON.parse(msg);
       console.log(msg.filename + " " + msg.filecode);
-      var temp = new File(msg.filename,String(msg.filecode))
+      var temp = new File(msg.filename,msg.filecode);
       this.updateFileData(temp);
     })
   }
@@ -65,7 +65,7 @@ export class StudentCodeEditorComponent implements OnInit {
   }
 
   public updateFileData(file: File): void {
-    console.log(file);
+    console.log(this.files);
     if(this.files.find(element => element.name == file.name)==undefined)
     {
       var tempFile = new File(file.name,file.data);
@@ -73,8 +73,9 @@ export class StudentCodeEditorComponent implements OnInit {
     }
     var temp = this.files.find(element => element.name == file.name);
     temp.data = file.data;
-    if(this.currentFile == file.name)
+    if((this.currentFile == file.name)||(this.currentFile==""))
     {
+      this.currentFile = file.name;
       this.codeEditor.setValue(temp.data);
     }
   }

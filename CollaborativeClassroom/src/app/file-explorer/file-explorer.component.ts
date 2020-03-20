@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CurrentFileService } from '../current-file.service';
-import { File } from '../file';
 import { CodeService } from '../code.service';
 
 @Component({
@@ -20,35 +19,37 @@ export class FileExplorerComponent implements OnInit {
     if(this.isStudent)
     {
       this.code.messages.subscribe(msg => {
-        console.log(msg);
+        msg = JSON.parse(msg);
         this.addFile(msg.filename);
       })
-    }
-    else
-    {
-      this.files.push("New File");
-      this.files.push("file1");
-      this.files.push("file2");
-      this.files.push("file3");
     }
   }
 
   ngOnDestroy() {
   }
 
-
-
   addFile(filename: string)
   {
-    if(this.files.find(element => element == filename)==undefined)
+    if((this.files.length==0)&&(this.isStudent))
     {
       console.log("adding new file " + filename);
       this.files.push(filename);
+      this.changeCurrFile(filename);
+    }
+    if((this.files.find(element => element == filename)==undefined)&&(filename!=""))
+    {
+      console.log("adding new file " + filename);
+      this.files.push(filename);
+      if(!this.isStudent)
+      {
+        this.changeCurrFile(filename);
+      }
     }
   }
 
   changeCurrFile(file: string)
   {
+    this.currentFile = file;
     this._currentFile.changeCurrentFile(file);
   }
 }
