@@ -4,11 +4,8 @@
     </div>
     <div *ngIf="isStudent; then studentView else teacherView"></div>
     <ng-template #studentView>
-        <div class="col">
+        <div class="col-10">
             <app-student-code-editor></app-student-code-editor>
-        </div>
-        <div class="col">
-            <app-notes-editor></app-notes-editor>
         </div>
     </ng-template>
     <ng-template #teacherView>

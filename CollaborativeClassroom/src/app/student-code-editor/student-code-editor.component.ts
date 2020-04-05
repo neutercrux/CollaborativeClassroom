@@ -3,7 +3,10 @@ import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
 import { File } from '../file';
+import { Note } from '../note';
+import { FileNoteMap } from '../filenotemap';
 import { CurrentFileService } from '../current-file.service';
+import { DiffMatchPatch, DiffOp } from '../ng-diff-match-patch';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -25,7 +28,7 @@ import 'brace/mode/javascript';
 import 'brace/mode/text';
 import { WebsocketService } from '../websocket.service';
 import { CodeService } from '../code.service';
-import { CurrentLineService } from '../current-line.service';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -37,16 +40,19 @@ export class StudentCodeEditorComponent implements OnInit {
   private codeEditor: ace.Ace.Editor;
   private themes = THEMES;
   private files: File[] = [];
+  private notes: Note[] = [];
+  private fileNoteMap: FileNoteMap[] = [];
   private currentFile: string = "";
   private langArray;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   currentLine: number;
+  totalCodeLength: number;
   lineTimer;
   lang: string;
 
-  constructor(private _currentLine: CurrentLineService,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
@@ -55,7 +61,6 @@ export class StudentCodeEditorComponent implements OnInit {
   ngAfterViewInit() {
     this.initializeEditor();
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
-    this._currentLine.currentLine.subscribe();
     this.lineTimer = setInterval(()=>{ 
       this.changeCurrentLine()
     }, 1000);
@@ -69,19 +74,123 @@ export class StudentCodeEditorComponent implements OnInit {
   ngOnDestroy() {
   }
 
+  addNote(text: string, currentLine: string) : void
+  {
+    let num = parseInt(currentLine);
+    if((text=="")||(isNaN(num))||(num<1)||(num>this.totalCodeLength)||(this.currentFile==""))
+    {
+      console.log("text " + text + "isNaN " + isNaN(num) + "num " + num + "currentFile " + this.currentFile)
+      return;
+    }
+    let x = this.notes.find(element => element.lineNumber == num)
+    if(x!=undefined)
+    {
+      x.text = x.text + "\n" + text;
+      console.log("added to same note");
+      return;
+    }
+    let currentFileNote = this.fileNoteMap.find(element => element.fileName == this.currentFile);
+    currentFileNote.notes.push(new Note(text,num));
+    currentFileNote.notes.sort(this.compareFn);
+    console.log(currentFileNote);
+  }
+
+  compareFn(a: Note,b: Note) : number
+  {
+    if (a.lineNumber > b.lineNumber)
+      return 1;
+    else if(a.lineNumber == b.lineNumber)
+      return 0;
+    else
+      return -1;
+  }
+
   public updateFileData(file: File): void {
-    console.log(this.files);
     if(this.files.find(element => element.name == file.name)==undefined)
     {
       var tempFile = new File(file.name,file.data);
       this.files.push(tempFile);
+      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
     }
     var temp = this.files.find(element => element.name == file.name);
+    this.resolveNotePositioning(temp.data,file.data);
     temp.data = file.data;
-    if((this.currentFile == file.name)||(this.currentFile==""))
+    if(this.currentFile == file.name)
+    {
+      this.codeEditor.setValue(temp.data);
+    }
+    if(this.currentFile=="")
     {
       this.currentFile = file.name;
       this.codeEditor.setValue(temp.data);
+      this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
+    }
+  }
+
+  resolveNotePositioning(temp: string,file: string)
+  {
+    let diffArr = this._diff.diff_main(temp,file);
+    console.log(diffArr);
+    var lineNumber = 1;
+    for (let i in diffArr)
+    {
+      switch (diffArr[i][0])
+      {
+        case -1:
+          {
+            for(let j of diffArr[i][1])
+            {
+              if(j=="\n")
+              {
+                this.notes.forEach(function (element){
+                  if(element.lineNumber>lineNumber)
+                  {
+                    --element.lineNumber;
+                  }
+                })
+              }
+            }
+            break;
+          }
+        case 0:
+          {
+            for(let j of diffArr[i][1])
+            {
+              if(j=="\n")
+                ++lineNumber;
+            }
+            break;
+          }
+        case 1:
+          {
+            for(let j of diffArr[i][1])
+            {
+              if(j=="\n")
+              {
+                this.notes.forEach(function (element){
+                  if(element.lineNumber>lineNumber)
+                  {
+                    ++element.lineNumber;
+                  }
+                })
+              }
+            }
+            break;
+          }
+      }
+    }
+    this.adjustNotes();
+  }
+
+  public adjustNotes(): void
+  {
+    for(let i: number = 0;i<this.notes.length-1;++i)
+    {
+      if(this.notes[i].lineNumber == this.notes[i+1].lineNumber)
+      {
+        this.notes[i].text = this.notes[i].text + this.notes[i+1].text
+        this.notes.splice(i+1,1);
+      }
     }
   }
 
@@ -93,8 +202,10 @@ export class StudentCodeEditorComponent implements OnInit {
       {
         var tempFile = new File(this.currentFile,"");
         this.files.push(tempFile);
+        this.fileNoteMap.push(new FileNoteMap(tempFile.name));
       }
       this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
+      this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
     }
   }
 
@@ -104,7 +215,11 @@ export class StudentCodeEditorComponent implements OnInit {
     if(this.currentLine!= temp)
     {
       this.currentLine = temp;
-      this._currentLine.changeCurrentLine(this.currentLine);
+    }
+    temp = this.codeEditor.session.getLength();
+    if(this.totalCodeLength!= temp)
+    {
+      this.totalCodeLength = temp;
     }
   }
 
@@ -134,6 +249,7 @@ export class StudentCodeEditorComponent implements OnInit {
     this.codeEditor.setTheme(this.themes[0].actual_name);
     this.codeEditor.getSession().setMode("ace/mode/c_cpp");
     this.codeEditor.setShowFoldWidgets(true);
+    this.codeEditor.setReadOnly(true);
     ace.require('ace/ext/beautify');
   }
 
@@ -162,11 +278,10 @@ export class StudentCodeEditorComponent implements OnInit {
   public runCode():void {
       const code = this.codeEditor.getValue();
       this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
-        console.log(data.body);
+        // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
         this.outputString = this.response.output;
         // this.langArray = data.body['langMap'];
-        console.log(this.outputString)
     });
   } 
 

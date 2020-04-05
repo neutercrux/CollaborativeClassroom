@@ -12,12 +12,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { MainPageComponent } from './main-page/main-page.component';
-import { NotesEditorComponent } from './notes-editor/notes-editor.component';
 import { RegisterComponent } from './register/register.component';
 import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
 import { StudentCodeEditorComponent } from './student-code-editor/student-code-editor.component';
 import { DashboardComponent } from './dashboard/dashboard.component'
 import { StudentDataComponent } from './student-data/student-data.component';
+import { DiffMatchPatch } from './ng-diff-match-patch';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,6 @@ import { StudentDataComponent } from './student-data/student-data.component';
     CodeEditorComponent,
     FileExplorerComponent,
     MainPageComponent,
-    NotesEditorComponent,
     RegisterComponent,
     StudentCodeEditorComponent,
     DashboardComponent,
@@ -43,7 +42,7 @@ import { StudentDataComponent } from './student-data/student-data.component';
     ReactiveFormsModule,
     NgxPubSubModule
   ],
-  providers: [],
+  providers: [DiffMatchPatch],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
