@@ -36,6 +36,11 @@ io.on("connection", socket => {
   socket.on("message", message => {
     io.emit("message", message);
   });
+
+  socket.on('new-doubt', (message) => {
+    io.emit('new-doubt', message);
+  });
+
 });
 
 http.listen(port,function(){

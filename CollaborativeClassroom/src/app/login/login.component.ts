@@ -28,11 +28,14 @@ export class LoginComponent implements OnInit {
       console.log(this.response.body[0].designation);
       this.desig = this.response.body[0].designation
       sessionStorage.setItem("designation",this.response.body[0].designation);
+      sessionStorage.setItem("name",usn);
       if(this.response.status==200 && this.desig=='student'){
-        this.router.navigate(['/mainPage'])
+        // this.router.navigate(['/mainPage'])
+        this.router.navigate(['/doubt'])
       }
       else if(this.response.status==200 && this.desig=='teacher'){
-        this.router.navigate(['/dashboard'])
+        // this.router.navigate(['/dashboard'])
+        this.router.navigate(['/doubt'])
       }
       else{
         this.router.navigate(['/login'])
