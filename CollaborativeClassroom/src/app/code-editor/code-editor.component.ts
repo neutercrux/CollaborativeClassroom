@@ -36,7 +36,7 @@ export class CodeEditorComponent implements OnInit {
   private codeEditor: ace.Ace.Editor;
   private themes = THEMES;
   private files: File[] = [];
-  private currentFile: string;
+  private currentFile: string = "";
   private langArray;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
@@ -98,7 +98,9 @@ export class CodeEditorComponent implements OnInit {
       const basicEditorOptions: Partial<ace.Ace.EditorOptions> = {
           highlightActiveLine: true,
           minLines: 14,
-          maxLines: Infinity,
+          fontSize: 20,
+          maxLines: 27,
+          animatedScroll: true,
       };
       const extraEditorOptions = { enableBasicAutocompletion: true };
       return Object.assign(basicEditorOptions, extraEditorOptions);

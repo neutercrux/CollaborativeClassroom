@@ -46,24 +46,16 @@
         </div>
     </div>
     <div class="col-5">
-        <div>
-            <textarea #newNoteText class="form-control " aria-label="With textarea"></textarea>
-        
-            <div class="input-group mt-2">
-                <input type="text" class="form-control" #newNoteLine
-                [value]='currentLine+1' aria-label="Add new Note" 
-                aria-describedby="button-file">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" (click)='addNote(newNoteText.value, newNoteLine.value)' type="button" id="button-file">+</button>
-                </div>
-            </div>
+        <div class="d-flex justify-content-between" >
+            <button mat-raised-button (click)="openDialog()">Add Note</button>
+            <button mat-raised-button (click)="download()">Download</button>
         </div>
         
         <ul class="list-group mt-5">
             <div *ngFor="let note of notes">
-                <li class="list-group-item d-flex justify-content-between mt-2 align-items-start bg-warning">
-                    <span class="badge badge-light badge-pill">Line {{note.lineNumber}}</span>
+                <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item d-flex justify-content-between mt-2 align-items-start">
                     <pre>{{note.text}}</pre>
+                    <button mat-raised-button matTooltip="Edit the note name" (click)="editNoteDialog(note)">Edit</button>
                 </li>
             </div>
         </ul>

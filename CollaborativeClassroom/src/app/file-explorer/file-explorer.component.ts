@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CurrentFileService } from '../current-file.service';
 import { CodeService } from '../code.service';
+import { FileDialogComponent } from '../file-dialog/file-dialog.component';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-file-explorer',
@@ -12,7 +14,7 @@ export class FileExplorerComponent implements OnInit {
   private files: string[] = [];
   @Input() private isStudent: boolean;
   private currentFile: string;
-  constructor(private code: CodeService,private _currentFile: CurrentFileService) { }
+  constructor(public dialog: MatDialog, private code: CodeService,private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.currentFile = currentOpenFile);
@@ -27,6 +29,37 @@ export class FileExplorerComponent implements OnInit {
 
   ngOnDestroy() {
   }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(FileDialogComponent, {
+      height: '300px',
+      width: '600px',
+      data: ""
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if(result!=undefined)
+        this.addFile(result)
+    });
+  }
+
+  editFileDialog(filename: string): void
+  {
+
+    const dialogRef = this.dialog.open(FileDialogComponent, {
+      height: '300px',
+      width: '600px',
+      data: filename
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      let x = this.files.find(element => element == filename)
+      x = result
+    });
+  }
+
 
   addFile(filename: string)
   {

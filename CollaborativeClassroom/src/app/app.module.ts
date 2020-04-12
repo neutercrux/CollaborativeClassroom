@@ -19,12 +19,13 @@ import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
 import { StudentCodeEditorComponent } from './student-code-editor/student-code-editor.component';
 import { DashboardComponent } from './dashboard/dashboard.component'
 import { StudentDataComponent } from './student-data/student-data.component';
-<<<<<<< HEAD
 import { DiffMatchPatch } from './ng-diff-match-patch';
-=======
-import { DoubtComponent } from './doubt/doubt.component'
-import { DoubtService } from './doubt.service'
->>>>>>> added doubts functionality
+import { NoteDialogComponent } from './note-dialog/note-dialog.component';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MatDialogModule, MatTooltipModule, MatBadgeModule } from '@angular/material'
+import { FileDialogComponent } from './file-dialog/file-dialog.component';
+import { DoubtComponent } from './doubt/doubt.component';
+import { DoubtService } from './doubt.service';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,9 @@ import { DoubtService } from './doubt.service'
     StudentCodeEditorComponent,
     DashboardComponent,
     StudentDataComponent,
-    DoubtComponent
+    DoubtComponent,
+    NoteDialogComponent,
+    FileDialogComponent 
   ],
   imports: [
     BrowserModule,
@@ -47,15 +50,22 @@ import { DoubtService } from './doubt.service'
     AngularMaterialModule,
     FlexLayoutModule,
     FormsModule,
+    MatDialogModule,
     ReactiveFormsModule,
     MatMenuModule,
     NgxPubSubModule
   ],
-<<<<<<< HEAD
-  providers: [DiffMatchPatch],
-=======
-  providers: [DoubtService],
->>>>>>> added doubts functionality
+  entryComponents: [
+    StudentCodeEditorComponent,
+    NoteDialogComponent,
+    FileDialogComponent
+  ],
+  providers: [
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
+    DiffMatchPatch,DoubtService,
+    MatTooltipModule,
+    MatBadgeModule,
+    NgxPubSubModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

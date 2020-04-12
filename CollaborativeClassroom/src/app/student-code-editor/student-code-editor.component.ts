@@ -7,6 +7,7 @@ import { Note } from '../note';
 import { FileNoteMap } from '../filenotemap';
 import { CurrentFileService } from '../current-file.service';
 import { DiffMatchPatch, DiffOp } from '../ng-diff-match-patch';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -29,6 +30,7 @@ import 'brace/mode/text';
 import { WebsocketService } from '../websocket.service';
 import { CodeService } from '../code.service';
 import { element } from 'protractor';
+import { NoteDialogComponent } from '../note-dialog/note-dialog.component';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -52,7 +54,7 @@ export class StudentCodeEditorComponent implements OnInit {
   lineTimer;
   lang: string;
 
-  constructor(private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
@@ -73,6 +75,39 @@ export class StudentCodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
   }
+
+  openDialog(): void {
+    let x = new Note("",this.currentLine+1)
+    const dialogRef = this.dialog.open(NoteDialogComponent, {
+      height: '300px',
+      width: '600px',
+      data: x
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if(result!=undefined)
+        this.addNote(result.text, result.lineNumber)
+    });
+  }
+
+  editNoteDialog(note: Note): void
+  {
+
+    const dialogRef = this.dialog.open(NoteDialogComponent, {
+      height: '300px',
+      width: '600px',
+      data: note
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      let x = this.notes.find(element => element.lineNumber == note.lineNumber)
+      x.lineNumber = result.lineNumber;
+      x.text = result.text;
+    });
+  }
+
 
   addNote(text: string, currentLine: string) : void
   {
@@ -168,7 +203,7 @@ export class StudentCodeEditorComponent implements OnInit {
               if(j=="\n")
               {
                 this.notes.forEach(function (element){
-                  if(element.lineNumber>lineNumber)
+                  if(element.lineNumber>=lineNumber)
                   {
                     ++element.lineNumber;
                   }
@@ -181,6 +216,127 @@ export class StudentCodeEditorComponent implements OnInit {
     }
     this.adjustNotes();
   }
+
+  // resolveNotePositioning(temp: string,file: string)
+  // {
+  //   let diffArr = this._diff.diff_main(temp,file);
+  //   console.log(diffArr);
+  //   var lineNumber = 1;
+  //   var prevText = "";
+  //   var currentText = "";
+  //   var repositionNotes: boolean = false;
+  //   var delta: number = 0;
+  //   var repositionLine: number = 0;
+  //   for (let i in diffArr)
+  //   {
+  //     switch (diffArr[i][0])
+  //     {
+  //       case -1:
+  //         {
+  //           for(let j of diffArr[i][1])
+  //           {
+  //             if(j!="\n")
+  //               currentText+= j;
+  //             else
+  //             {
+  //               if(repositionNotes)
+  //               {
+  //                 this.repositionNotes(repositionLine,delta);
+  //               }
+  //               repositionNotes = true;
+  //               repositionLine = lineNumber;
+  //               delta = -1;
+  //               if(prevText!="" && prevText.length >= currentText.length)
+  //               {
+  //                 //console.log("added 1 to reposition")
+  //                 //++repositionLine;
+  //               }
+  //               console.log("repositionLine: "+repositionLine+" delta: "+delta+" prevText: "+prevText+" currentText: "+currentText)
+  //               prevText = currentText;
+  //               currentText = "";
+  //               // this.notes.forEach(function (element){
+  //               //   if(element.lineNumber>lineNumber)
+  //               //   {
+  //               //     --element.lineNumber;
+  //               //   }
+  //               // })
+  //             }
+  //           }
+  //           break;
+  //         }
+  //       case 0:
+  //         {
+  //           for(let j of diffArr[i][1])
+  //           {
+  //             if(j!="\n")
+  //               currentText+= j;
+  //             else
+  //             {
+  //               if(repositionNotes)
+  //               {
+  //                 this.repositionNotes(repositionLine,delta);
+  //               }
+  //               repositionNotes = false;
+  //               repositionLine = this.totalCodeLength;
+  //               delta = 0;
+  //               prevText = "";
+  //               currentText = "";
+  //               ++lineNumber;
+  //             }
+  //           }
+  //           break;
+  //         }
+  //       case 1:
+  //         {
+  //           for(let j of diffArr[i][1])
+  //           {
+  //             if(j!="\n")
+  //               currentText+= j;
+  //             else
+  //             {
+  //               if(repositionNotes)
+  //               {
+  //                 this.repositionNotes(repositionLine,delta);
+  //               }
+  //               repositionNotes = true;
+  //               repositionLine = lineNumber;
+  //               delta = 1;
+  //               if(prevText!="" && prevText.length >= currentText.length)
+  //               {
+  //                 --repositionLine;
+  //               }
+  //               console.log("repositionLine: "+repositionLine+" delta: "+delta+" prevText: "+prevText+" currentText: "+currentText)
+  //               prevText = currentText;
+  //               currentText = "";
+  //               ++lineNumber;
+  //               // this.notes.forEach(function (element){
+  //               //   if(element.lineNumber>lineNumber)
+  //               //   {
+  //               //     ++element.lineNumber;
+  //               //   }
+  //               // })
+  //             }
+  //           }
+  //           break;
+  //         }
+  //     }
+  //   }
+  //   if(repositionNotes)
+  //   {
+  //     this.repositionNotes(repositionLine,delta);
+  //   }
+  //   this.adjustNotes();
+  // }
+
+  // private repositionNotes(repositionLine: number,delta: number): void
+  // {
+  //   this.notes.forEach(function (element){
+  //     if(element.lineNumber>repositionLine)
+  //     {
+  //       element.lineNumber+=delta;
+  //     }
+  //   })
+  // }
 
   public adjustNotes(): void
   {
@@ -235,7 +391,9 @@ export class StudentCodeEditorComponent implements OnInit {
       const basicEditorOptions: Partial<ace.Ace.EditorOptions> = {
           highlightActiveLine: true,
           minLines: 14,
-          maxLines: Infinity,
+          fontSize: 20,
+          maxLines: 27,
+          animatedScroll: true,
       };
       const extraEditorOptions = { enableBasicAutocompletion: true };
       return Object.assign(basicEditorOptions, extraEditorOptions);

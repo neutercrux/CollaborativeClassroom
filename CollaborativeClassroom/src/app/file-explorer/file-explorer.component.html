@@ -1,14 +1,7 @@
 <div class="mt-4 ml-4">
     <div *ngIf="!isStudent; then addFileInput"></div>
     <ng-template #addFileInput>
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" #newFile (keyup.enter)="addFile(newFile.value)"
-            (blur)="addFile(newFile.value)" placeholder="Add new File" aria-label="Add new File" 
-            aria-describedby="button-file">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" (click)='addFile(newFile.value)' type="button" id="button-file">+</button>
-            </div>
-        </div>
+        <button class="mb-4" mat-raised-button (click)="openDialog()">Add File</button>
     </ng-template>
     <div *ngFor="let file of files">
         <div *ngIf="currentFile == file; then activeFile else nonActiveFile"></div>

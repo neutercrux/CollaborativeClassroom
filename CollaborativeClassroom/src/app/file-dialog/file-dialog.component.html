@@ -1,0 +1,12 @@
+<div mat-dialog-content>
+    <div>
+        <mat-form-field style="width: 100%">
+            <mat-label>File Name</mat-label>
+            <input matInput placeholder="enter a name.." [(ngModel)]="data" cdkFocusInitial>
+        </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="data">Ok</button>
+</div>
