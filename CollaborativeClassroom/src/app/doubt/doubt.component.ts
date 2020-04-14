@@ -2,13 +2,8 @@ import { Component,Input, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
-// import {filter} from 'rxjs/operator/filter'
-// import 'rxjs/add/operator/distinctUntilChanged';
-// import 'rxjs/add/operator/filter';
-// import 'rxjs/add/operator/skipWhile';
-// import 'rxjs/add/operator/scan';
-// import 'rxjs/add/operator/throttleTime';
 import { DoubtService } from '../doubt.service'
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-doubt',
@@ -20,6 +15,7 @@ import { DoubtService } from '../doubt.service'
 export class DoubtComponent implements OnInit {
 
   message: string;
+  fileUrl: any;
   messages = [];
   questionLength : number = 0;
   numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
@@ -28,7 +24,7 @@ export class DoubtComponent implements OnInit {
   @Input() private isStudent: boolean;
   questionSelected:any;
 
-  constructor(private doubtService:DoubtService) { 
+  constructor(private doubtService:DoubtService,private sanitizer: DomSanitizer) { 
   }
 
   sendMessage() {
@@ -39,6 +35,7 @@ export class DoubtComponent implements OnInit {
       this.doubtService.sendMessage(this.message,this.name,this.designation,this.questionSelected);
     }
     this.message = '';
+    this.downloadDoubt()
   }
 
   ngOnInit() {
@@ -58,8 +55,26 @@ export class DoubtComponent implements OnInit {
     });
     console.log(this.messages)
   }
+
   updateQues(number){
     console.log(number)
     this.questionSelected = number;
+  }
+
+  private downloadDoubt(){
+    var data = '';
+
+    for( let m of this.messages){
+      if(m.designation=='teacher'){
+        data += "A"+m.qno+": "+m.message+"\n"
+      }
+      else{
+        data += "Q"+m.qno+": "+m.message+"\n";
+      }
+    }
+    console.log(data)
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+
+    this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
   }
 }
