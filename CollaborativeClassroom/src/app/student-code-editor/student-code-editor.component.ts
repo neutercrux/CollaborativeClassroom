@@ -8,6 +8,8 @@ import { FileNoteMap } from '../filenotemap';
 import { CurrentFileService } from '../current-file.service';
 import { DiffMatchPatch, DiffOp } from '../ng-diff-match-patch';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -46,6 +48,7 @@ export class StudentCodeEditorComponent implements OnInit {
   private fileNoteMap: FileNoteMap[] = [];
   private currentFile: string = "";
   private langArray;
+  private langComments: string[] = [];
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
@@ -74,6 +77,47 @@ export class StudentCodeEditorComponent implements OnInit {
   }
 
   ngOnDestroy() {
+  }
+
+  private download(): void 
+  {
+    var zip = new JSZip();
+    var comment: string = "//";
+    for (let i in this.fileNoteMap)
+    {
+      let x = this.files.find(element => element.name == this.fileNoteMap[i].fileName);
+      let y = this.fileNoteMap[i].notes
+      var line: number = 0;
+      var arr = x.data.split("\n");
+      var data: string = "";
+      while(line<arr.length)
+      {
+        data+=arr[line]
+        var z = y.find(element => element.lineNumber-1 == line)
+        if(z != undefined)
+        {
+          data = data + comment + z.text;
+        }
+        data += "\n";
+        ++line;
+      }
+      console.log(data);
+      zip.file(this.fileNoteMap[i].fileName, data);
+    }
+
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
+        saveAs(content, "files.zip");
+    });
+
+    // var zip = new JSZip();
+    // zip.file("Hello.txt", "Hello World\n");
+    // var img = zip.folder("images");
+    // zip.generateAsync({type:"blob"})
+    // .then(function(content) {
+    //     // see FileSaver.js
+    //     saveAs(content, "example.zip");
+    // });
   }
 
   openDialog(): void {

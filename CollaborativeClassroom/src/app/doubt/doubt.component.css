@@ -1,9 +1,6 @@
 .row{
-    margin-top: 2% !important;
-    margin-left: 65% !important;
     /* margin-left: 80%; */
-    width: 700px;
-    position: fixed;
+    width: 80%;
 }
 /* #ques{
     display:inline-block;
@@ -61,7 +58,7 @@
 .panel-body
 {
     overflow-y: scroll;
-    height: 250px;
+    height: 200px;
 }
 
 ::-webkit-scrollbar-track

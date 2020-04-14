@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,Input, OnInit } from '@angular/core';
 import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
@@ -25,7 +25,7 @@ export class DoubtComponent implements OnInit {
   numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
   name:String = sessionStorage.getItem("name");;
   designation:String = sessionStorage.getItem("designation");
-  isStudent = ("student" == sessionStorage.getItem("designation"));
+  @Input() private isStudent: boolean;
   questionSelected:any;
 
   constructor(private doubtService:DoubtService) { 

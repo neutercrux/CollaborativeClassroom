@@ -31,11 +31,11 @@ export class LoginComponent implements OnInit {
       sessionStorage.setItem("name",usn);
       if(this.response.status==200 && this.desig=='student'){
         // this.router.navigate(['/mainPage'])
-        this.router.navigate(['/doubt'])
+        this.router.navigate(['/mainPage'])
       }
       else if(this.response.status==200 && this.desig=='teacher'){
-        // this.router.navigate(['/dashboard'])
-        this.router.navigate(['/doubt'])
+        this.router.navigate(['/dashboard'])
+        // this.router.navigate(['/mainPage'])
       }
       else{
         this.router.navigate(['/login'])
