@@ -12,4 +12,6 @@ app.route('/api/v1/run')
     .post(webapp.runCode)
 app.route('/api/v1/ip')
     .get(webapp.getIpAdd)
+app.route('/api/v1/update')
+    .post(webapp.updateData)
 }

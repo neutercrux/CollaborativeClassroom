@@ -10,6 +10,7 @@ import { AngularMaterialModule } from './angular-material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule} from '@angular/material/menu';
+import { NotifierModule, NotifierOptions } from 'angular-notifier';
 
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
@@ -26,6 +27,47 @@ import { MatDialogModule, MatTooltipModule, MatBadgeModule } from '@angular/mate
 import { FileDialogComponent } from './file-dialog/file-dialog.component';
 import { DoubtComponent } from './doubt/doubt.component';
 import { DoubtService } from './doubt.service';
+
+const customNotifierOptions: NotifierOptions = {
+  position: {
+		horizontal: {
+			position: 'left',
+			distance: 12
+		},
+		vertical: {
+			position: 'bottom',
+			distance: 12,
+			gap: 10
+		}
+	},
+  theme: 'material',
+  behaviour: {
+    autoHide: 5000,
+    onClick: 'hide',
+    onMouseover: 'pauseAutoHide',
+    showDismissButton: true,
+    stacking: 4
+  },
+  animations: {
+    enabled: true,
+    show: {
+      preset: 'slide',
+      speed: 300,
+      easing: 'ease'
+    },
+    hide: {
+      preset: 'fade',
+      speed: 300,
+      easing: 'ease',
+      offset: 50
+    },
+    shift: {
+      speed: 300,
+      easing: 'ease'
+    },
+    overlap: 150
+  }
+};
 
 @NgModule({
   declarations: [
@@ -53,6 +95,7 @@ import { DoubtService } from './doubt.service';
     MatDialogModule,
     ReactiveFormsModule,
     MatMenuModule,
+    NotifierModule.withConfig(customNotifierOptions),
     NgxPubSubModule
   ],
   entryComponents: [

@@ -10,7 +10,13 @@
   margin: 10%;
 
 }
-
+.csv-file-chooser-section button{ /* You Can Name it what you want*/
+  margin-right:16px;
+  }
+.csv-file-chooser-section input:last-child{
+margin-right:0px;
+/*so the last one dont push the div thas giving the space only between the inputs*/
+}
 table {
   width: 70%;
   /* margin-top: 20%; */

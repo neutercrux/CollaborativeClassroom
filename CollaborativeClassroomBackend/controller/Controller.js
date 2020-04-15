@@ -36,28 +36,55 @@ exports.signUp = function (req, res) {
         res.status(400).send({});
     }
     else{
-        User.find({usn : req.body.usn})
-        .then(data => {
-            if(data.length!=0){
-                console.log("USN Exists!")
+        if(desig=="teacher")
+        {
+            User.find({usn : req.body.usn})
+            .then(data => {
+                if(data.length!=0){
+                    console.log("USN Exists!")
+                    res.status(200).send({data});
+                }
+                else{
+                new_user.save()
+                    .then(user => {
+                        res.status(201).send({});
+                        console.log('Student added successfully')
+                    })
+                    .catch(err => {
+                        console.log("Bad Request");
+                        res.status(400).send({});
+                    });
+                }
+            })
+            .catch(err => {
+                console.log("Bad Request");
                 res.status(400).send({});
-            }
-            else{
-            new_user.save()
-                .then(user => {
-                    res.status(201).send({});
-                    console.log('Student added successfully')
-                })
-                .catch(err => {
-                    console.log("Bad Request");
-                    res.status(400).send({});
-                });
-            }
-        })
-        .catch(err => {
-            console.log("Bad Request");
-            res.status(400).send({});
-        })
+            })
+        }
+        else{
+            User.find({usn : req.body.usn,email:req.body.email})
+            .then(data => {
+                if(data.length!=1){
+                    console.log("USN doesn't Exists!")
+                    res.status(200).send({data});
+                }
+                else{
+                User.update({usn:req.body.usn},{password:req.body.password})
+                    .then(user => {
+                        res.status(201).send({});
+                        console.log('Student added successfully')
+                    })
+                    .catch(err => {
+                        console.log("Bad Request");
+                        res.status(400).send({});
+                    });
+                }
+            })
+            .catch(err => {
+                console.log("Bad Request");
+                res.status(400).send({});
+            })
+        } 
     }
 };
 
@@ -81,7 +108,30 @@ exports.loginUser = function (req,res) {
     })
   };
 
-
+exports.updateData = function(req,res){
+    reqData = req.body.data;
+    var studentData = []
+    reqData.forEach(input => {
+        var new_user = new User({
+            email : input.email,
+            usn : input.usn,
+            name: input.name,
+            designation: "student"
+            });
+        studentData.push(new_user);
+    })
+    User.remove({})
+        .then(r => {
+            console.log(r);
+            User.insertMany(studentData)
+            .then(resp => {
+                return res.status(200).send();
+            })
+            .catch(err => {
+                return res.status(400).send();
+            })
+        })    
+}
 
 exports.getLangs = function (req,res) {
     // console.log(req);

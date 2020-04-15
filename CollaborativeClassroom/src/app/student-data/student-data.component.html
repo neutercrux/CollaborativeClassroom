@@ -2,8 +2,9 @@
     <div class="container p-3">
         <button type="button" class="btn btn-info" (click)="returnMainPage($event)">Return</button>
     </div>
-    <div class="csv-file-chooser-section">
 
+    <div class="csv-file-chooser-section">
+        <button type="upload" class="btn btn-info update" (click)="updateData($event)">Update</button>
         <input type="file" #fileImportInput name="File Upload" id="txtFileUpload" (change)="fileChangeListener($event)"
             accept=".csv"/>
     
