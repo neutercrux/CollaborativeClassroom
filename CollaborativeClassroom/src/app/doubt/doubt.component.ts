@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import { DoubtService } from '../doubt.service'
 import { DomSanitizer } from '@angular/platform-browser';
+import { DownloadService, DownloadStatus } from '../download.service';
 
 @Component({
   selector: 'app-doubt',
@@ -24,7 +25,7 @@ export class DoubtComponent implements OnInit {
   @Input() private isStudent: boolean;
   questionSelected:any;
 
-  constructor(private doubtService:DoubtService,private sanitizer: DomSanitizer) { 
+  constructor(private _download: DownloadService,private doubtService:DoubtService,private sanitizer: DomSanitizer) { 
   }
 
   sendMessage() {
@@ -35,10 +36,10 @@ export class DoubtComponent implements OnInit {
       this.doubtService.sendMessage(this.message,this.name,this.designation,this.questionSelected);
     }
     this.message = '';
-    this.downloadDoubt()
   }
 
   ngOnInit() {
+    this._download.currentDownloadStatus.subscribe(currentDownloadStatus => this.downloadDoubt(currentDownloadStatus));
     this.doubtService.getMessages().subscribe((message) => {
       if(message.message.length>0 && message.qno){
         const currentTime = moment().format('hh:mm a');
@@ -61,20 +62,27 @@ export class DoubtComponent implements OnInit {
     this.questionSelected = number;
   }
 
-  private downloadDoubt(){
-    var data = '';
+  private downloadDoubt(currentDownloadStatus: DownloadStatus){
+    console.log(currentDownloadStatus);
+    if(currentDownloadStatus == DownloadStatus.Start)
+    {
+      var data = '';
 
-    for( let m of this.messages){
-      if(m.designation=='teacher'){
-        data += "A"+m.qno+": "+m.message+"\n"
+      for( let m of this.messages){
+        if(m.designation=='teacher'){
+          data += "A"+m.qno+": "+m.message+"\n"
+        }
+        else{
+          data += "Q"+m.qno+": "+m.message+"\n";
+        }
       }
-      else{
-        data += "Q"+m.qno+": "+m.message+"\n";
-      }
+      console.log(data)
+      
+      var FileSaver = require('file-saver');
+      var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+      FileSaver.saveAs(blob, "doubts.txt");
+
+      this._download.changeDownloadStatus(DownloadStatus.Done);
     }
-    console.log(data)
-    const blob = new Blob([data], { type: 'application/octet-stream' });
-
-    this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
   }
 }

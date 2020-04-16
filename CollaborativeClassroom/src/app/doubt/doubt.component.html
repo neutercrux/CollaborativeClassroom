@@ -1,97 +1,93 @@
 <link href="assets/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="assets/js/bootstrap.min.js"></script>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="panel panel-primary">
-                <div class="panel-heading" id="accordion">
-                    <span class="fa fa-comments"></span> Chat
-                    <div class="btn-group pull-right">
-                        <a type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                            <span class="fa fa-arrow-down"></span>
-                        </a>
-                    </div>
-                </div>
-            <div class="panel-collapse collapse" id="collapseOne">
-                <div class="panel-body">
-                    <ul class="chat">
-
-                        <div *ngIf="isStudent; then studentView else teacherView"></div>
-                        <ng-template #studentView>
-                            <li *ngFor="let message of messages" class="left clearfix">
-                                <div *ngIf="message.designation=='student'">
-                                    <span class="chat-img pull-left">
-                                        <div class="circle">
-                                            <p>{{message.qno}}</p>
-                                        </div>
-                                    </span>
-                                    <div class="chat-body clearfix">
-                                        <div class="header">
-                                            <strong class="primary-font">{{message.user}}</strong> <small class="pull-right text-muted">
-                                                <i class="fa fa-clock-o"></i>{{message.time}}</small>
-                                        </div>
-                                        <p>{{message.message}}</p>
-                                    </div>
-                                </div>
-                                <div *ngIf="message.designation=='teacher'">
-                                    <span class="chat-img pull-right">
-                                        <div class="circle1">
-                                            <p>{{message.qno}}</p>
-                                        </div>
-                                    </span>
-                                    <div class=" clearfix">
-                                        <div class="header">
-                                            <p class="primary-font">{{message.message}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ng-template>
-                        <ng-template #teacherView>
-                            <li *ngFor="let message of messages" class="left clearfix">
-                                <div  matTooltip="Click to answer" id= "sent" *ngIf="message.designation=='student'" (click)="updateQues(message.qno)">
-                                    <span class="chat-img pull-left">
-                                        <div class="circle">
-                                            <p>{{message.qno}}</p>
-                                        </div>
-                                    </span>
-                                    <div class="chat-body clearfix">
-                                        <div class="header">
-                                            <strong class="primary-font">{{message.user}}</strong> <small class="pull-right text-muted">
-                                                <i class="fa fa-clock-o"></i>{{message.time}}</small>
-                                        </div>
-                                        <p>{{message.message}}</p>
-                                    </div>
-                                </div>
-                                <div *ngIf="message.designation=='teacher'">
-                                    <span class="chat-img pull-right">
-                                        <div class="circle1">
-                                            <p>{{message.qno}}</p>
-                                        </div>
-                                    </span>
-                                    <div class=" clearfix">
-                                        <div class="header">
-                                            <p class="primary-font">{{message.message}}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ng-template>
-                    </ul>
-                </div>
-                <div class="panel-footer">
-                    <div class="input-group">
-                        <input id="btn-input1" type="text" class="form-control input-sm" placeholder="Type your message here..." 
-                        [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()" />
-                        <span class="input-group-btn">
-                            <button class="btn btn-warning btn-sm" id="btn-chat" (click)="sendMessage()">
-                                Send</button>
-                        </span>
-                    </div>
+<div class="container w-100">
+        <div class="panel panel-primary">
+            <div class="panel-heading" id="accordion">
+                <span class="fa fa-comments"></span> Chat
+                <div class="btn-group pull-right">
+                    <a type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                        <span class="fa fa-arrow-down"></span>
+                    </a>
                 </div>
             </div>
-        </div>
+        <div class="panel-collapse collapse" id="collapseOne">
+            <div class="panel-body">
+                <ul class="chat">
+
+                    <div *ngIf="isStudent; then studentView else teacherView"></div>
+                    <ng-template #studentView>
+                        <li *ngFor="let message of messages" class="left clearfix">
+                            <div *ngIf="message.designation=='student'">
+                                <span class="chat-img pull-left">
+                                    <div class="circle">
+                                        <p>{{message.qno}}</p>
+                                    </div>
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font">{{message.user}}</strong> <small class="pull-right text-muted">
+                                            <i class="fa fa-clock-o"></i>{{message.time}}</small>
+                                    </div>
+                                    <p>{{message.message}}</p>
+                                </div>
+                            </div>
+                            <div *ngIf="message.designation=='teacher'">
+                                <span class="chat-img pull-right">
+                                    <div class="circle1">
+                                        <p>{{message.qno}}</p>
+                                    </div>
+                                </span>
+                                <div class=" clearfix">
+                                    <div class="header">
+                                        <p class="primary-font">{{message.message}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ng-template>
+                    <ng-template #teacherView>
+                        <li *ngFor="let message of messages" class="left clearfix">
+                            <div  matTooltip="Click to answer" id= "sent" *ngIf="message.designation=='student'" (click)="updateQues(message.qno)">
+                                <span class="chat-img pull-left">
+                                    <div class="circle">
+                                        <p>{{message.qno}}</p>
+                                    </div>
+                                </span>
+                                <div class="chat-body clearfix">
+                                    <div class="header">
+                                        <strong class="primary-font">{{message.user}}</strong> <small class="pull-right text-muted">
+                                            <i class="fa fa-clock-o"></i>{{message.time}}</small>
+                                    </div>
+                                    <p>{{message.message}}</p>
+                                </div>
+                            </div>
+                            <div *ngIf="message.designation=='teacher'">
+                                <span class="chat-img pull-right">
+                                    <div class="circle1">
+                                        <p>{{message.qno}}</p>
+                                    </div>
+                                </span>
+                                <div class=" clearfix">
+                                    <div class="header">
+                                        <p class="primary-font">{{message.message}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ng-template>
+                </ul>
+            </div>
+            <div class="panel-footer">
+                <div class="input-group">
+                    <input id="btn-input1" type="text" class="form-control input-sm" placeholder="Type your message here..." 
+                    [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-warning btn-sm" id="btn-chat" (click)="sendMessage()">
+                            Send</button>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -33,6 +33,7 @@ import { WebsocketService } from '../websocket.service';
 import { CodeService } from '../code.service';
 import { element } from 'protractor';
 import { NoteDialogComponent } from '../note-dialog/note-dialog.component';
+import { DownloadService, DownloadStatus } from '../download.service';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -57,7 +58,7 @@ export class StudentCodeEditorComponent implements OnInit {
   lineTimer;
   lang: string;
 
-  constructor(public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
     this.getLangs();
@@ -66,6 +67,7 @@ export class StudentCodeEditorComponent implements OnInit {
   ngAfterViewInit() {
     this.initializeEditor();
     this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
+    this._download.currentDownloadStatus.subscribe();
     this.lineTimer = setInterval(()=>{ 
       this.changeCurrentLine()
     }, 1000);
@@ -79,7 +81,7 @@ export class StudentCodeEditorComponent implements OnInit {
   ngOnDestroy() {
   }
 
-  private download(): void 
+  private download(currentDownloadStatus: DownloadStatus): void 
   {
     var zip = new JSZip();
     var comment: string = "//";
@@ -109,15 +111,7 @@ export class StudentCodeEditorComponent implements OnInit {
     .then(function(content) {
         saveAs(content, "files.zip");
     });
-
-    // var zip = new JSZip();
-    // zip.file("Hello.txt", "Hello World\n");
-    // var img = zip.folder("images");
-    // zip.generateAsync({type:"blob"})
-    // .then(function(content) {
-    //     // see FileSaver.js
-    //     saveAs(content, "example.zip");
-    // });
+    this._download.changeDownloadStatus(DownloadStatus.Start);
   }
 
   openDialog(): void {

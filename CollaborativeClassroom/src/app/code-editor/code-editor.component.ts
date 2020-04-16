@@ -89,6 +89,7 @@ export class CodeEditorComponent implements OnInit {
   getLangs(){
     this._codeEditorService.getLangs().subscribe(data=>{
         this.langArray = data.body['langMap'];
+        console.log(this.langArray);
     });
   }
 

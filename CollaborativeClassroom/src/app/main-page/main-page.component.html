@@ -14,6 +14,14 @@
         </div>
     </ng-template>
 </div>
-<div class="mt-4 mb-4">
-    <app-doubt [isStudent] = "isStudent" ></app-doubt>
-</div>
+<div *ngIf="isStudent; then studentDoubtView else teacherDoubtView"></div>
+<ng-template #studentDoubtView>
+    <div class="col-6 offset-2 mt-4">
+        <app-doubt [isStudent] = "isStudent" ></app-doubt>
+    </div>
+</ng-template>
+<ng-template #teacherDoubtView>
+    <div class="col-10 offset-2 mt-4">
+        <app-doubt [isStudent] = "isStudent" ></app-doubt>
+    </div>
+</ng-template>
