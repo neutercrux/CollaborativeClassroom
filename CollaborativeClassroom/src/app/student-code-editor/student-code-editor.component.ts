@@ -98,12 +98,13 @@ export class StudentCodeEditorComponent implements OnInit {
       if(this.currentFile==nameArr[0])
       {
         this.currentFile = newNameArr[0];
+        this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
+        this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
       }
       this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
       this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
       this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
-      this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
-      this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+      
 
     }
     else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
@@ -172,6 +173,7 @@ export class StudentCodeEditorComponent implements OnInit {
     for (let i in this.fileNoteMap)
     {
       let x = this.files.find(element => element.name == this.fileNoteMap[i].fileName);
+      comment = this.langArray.find(element => element.ext = x.language).comment_syntax;
       let y = this.fileNoteMap[i].notes
       var line: number = 0;
       var arr = x.data.split("\n");

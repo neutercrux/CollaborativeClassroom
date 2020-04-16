@@ -1,9 +1,5 @@
 <div class="row mt-4">
     <div class="col-2 mt-4">
-        <div *ngIf="!isStudent; then addFileInput"></div>
-        <ng-template #addFileInput>
-            <button class="mb-4 ml-4" mat-raised-button (click)="openDialog()">Add File</button>
-        </ng-template>
         <div class="ml-4" *ngFor="let file of files">
             <div *ngIf="currentFile == file.name; then activeFile else nonActiveFile"></div>
                 <ng-template #activeFile>

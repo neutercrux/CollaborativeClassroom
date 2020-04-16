@@ -28,6 +28,9 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 import { FileDialogComponent } from '../file-dialog/file-dialog.component';
 import { ILanguage, LANGUAGES } from '../language';
 import { element } from 'protractor';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { DownloadStatus, DownloadService } from '../download.service';
 
 @Component({
   selector: 'app-code-editor',
@@ -48,7 +51,7 @@ export class CodeEditorComponent implements OnInit {
   timer;
   sess: string;
 
-  constructor(public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
+  constructor(private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
   }
@@ -67,6 +70,24 @@ export class CodeEditorComponent implements OnInit {
       temp.data = this.sess;
       this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.currentFile + "." + temp.language, 'filecode' : temp.data });
     }
+  }
+
+  private download(currentDownloadStatus: DownloadStatus): void 
+  {
+    var zip = new JSZip();
+    for (let i in this.files)
+    {
+      let x = this.files[i].data
+      console.log(x);
+      var lang = this.files[i].language
+      zip.file(this.files[i].name + "." + lang, x);
+    }
+
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
+        saveAs(content, "files.zip");
+    });
+    this._download.changeDownloadStatus(DownloadStatus.Start);
   }
 
   openDialog(): void {

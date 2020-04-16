@@ -37,6 +37,9 @@
                         <option *ngFor="let theme of themes" [value]="theme.name" >{{theme.name}}</option>
                     </select>
                 </div>
+                <div class="input-group col-3 mb-3">
+                    <button mat-raised-button (click)="download()">Download</button>
+                </div>
             </div>
             
             <!-- the code editor -->
