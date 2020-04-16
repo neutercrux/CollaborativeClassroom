@@ -1,27 +1,13 @@
-<div class="row">
-    <div class="col-2">
-        <app-file-explorer [isStudent] = "isStudent" ></app-file-explorer>
-    </div>
-    <div *ngIf="isStudent; then studentView else teacherView"></div>
-    <ng-template #studentView>
-        <div class="col-10">
-            <app-student-code-editor></app-student-code-editor>
-        </div>
-    </ng-template>
-    <ng-template #teacherView>
-        <div class="col">
-            <app-code-editor></app-code-editor>
-        </div>
-    </ng-template>
-</div>
-<div *ngIf="isStudent; then studentDoubtView else teacherDoubtView"></div>
-<ng-template #studentDoubtView>
-    <div class="col-6 offset-2 mt-4">
+<div *ngIf="isStudent; then studentView else teacherView"></div>
+<ng-template #teacherView>
+    <app-code-editor></app-code-editor>
+    <div class="col-10 offset-2 mt-4">
         <app-doubt [isStudent] = "isStudent" ></app-doubt>
     </div>
 </ng-template>
-<ng-template #teacherDoubtView>
-    <div class="col-10 offset-2 mt-4">
+<ng-template #studentView>
+    <app-student-code-editor></app-student-code-editor>
+    <div class="col-6 offset-2 mt-4">
         <app-doubt [isStudent] = "isStudent" ></app-doubt>
     </div>
 </ng-template>

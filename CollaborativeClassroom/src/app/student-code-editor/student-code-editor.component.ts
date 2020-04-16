@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
-import { File } from '../file';
+import { File, FileStatus } from '../file';
 import { Note } from '../note';
 import { FileNoteMap } from '../filenotemap';
 import { CurrentFileService } from '../current-file.service';
@@ -34,6 +34,7 @@ import { CodeService } from '../code.service';
 import { element } from 'protractor';
 import { NoteDialogComponent } from '../note-dialog/note-dialog.component';
 import { DownloadService, DownloadStatus } from '../download.service';
+import { ILanguage,LANGUAGES} from '../language';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -48,7 +49,7 @@ export class StudentCodeEditorComponent implements OnInit {
   private notes: Note[] = [];
   private fileNoteMap: FileNoteMap[] = [];
   private currentFile: string = "";
-  private langArray;
+  private langArray: ILanguage[] = LANGUAGES;
   private langComments: string[] = [];
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
@@ -61,25 +62,108 @@ export class StudentCodeEditorComponent implements OnInit {
   constructor(private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
-    this.getLangs();
   }
 
   ngAfterViewInit() {
     this.initializeEditor();
-    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile));
     this._download.currentDownloadStatus.subscribe();
     this.lineTimer = setInterval(()=>{ 
       this.changeCurrentLine()
     }, 1000);
     this.code.messages.subscribe(msg => {
       msg = JSON.parse(msg);
-      var temp = new File(msg.filename,msg.filecode);
-      this.updateFileData(temp);
+      this.fileOperations(msg);
     })
   }
 
   ngOnDestroy() {
   }
+
+  private fileOperations(msg: any)
+  {
+    console.log(msg);
+    if(msg.fileStatus == FileStatus.CREATE_FILE)
+    {
+      var nameArr = msg.filename.split(".");
+      var tempFile = new File(nameArr[0],"",nameArr[1]);
+      this.files.push(tempFile);
+      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+      if(this.currentFile=="")
+        this.changeCurrFile(tempFile.name)
+    }
+    else if(msg.fileStatus == FileStatus.UPDATE_FILE)
+    {
+      var nameArr = msg.filename.split(".");
+      var newNameArr = msg.newfilename.split(".");
+      if(this.currentFile==nameArr[0])
+      {
+        this.currentFile = newNameArr[0];
+      }
+      this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
+      this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
+      this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
+      this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
+      this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+
+    }
+    else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
+    {
+      var nameArr = msg.filename.split(".");
+      this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
+      this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
+      if(this.currentFile==nameArr[0])
+      {
+        this.codeEditor.setValue(msg.filecode);
+      }
+    }
+  }
+
+  changeCurrFile(newFile: string)
+  {
+    this.currentFile = newFile;
+    var temp = this.files.find(element => element.name == this.currentFile);
+    this.codeEditor.setValue(temp.data);
+    this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
+    this.lang = this.langArray.find(element => element.ext == temp.language).name
+    this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+  }
+
+  // public changeCurrentFile(currFile: string): void {
+  //   if ((this.currentFile!=currFile)&&(this.files.length > 0)) {
+  //     this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
+  //     this.currentFile = currFile;
+  //     if(this.files.find(element => element.name == this.currentFile)==undefined)
+  //     {
+  //       var tempFile = new File(this.currentFile,"");
+  //       this.files.push(tempFile);
+  //       this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+  //     }
+  //     this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
+  //     this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
+  //   }
+  // }
+
+  // public updateFileData(file: File): void {
+  //   if(this.files.find(element => element.name == file.name)==undefined)
+  //   {
+  //     var tempFile = new File(file.name,file.data);
+  //     this.files.push(tempFile);
+  //     this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+  //   }
+  //   var temp = this.files.find(element => element.name == file.name);
+  //   //this.resolveNotePositioning(temp.data,file.data);
+  //   temp.data = file.data;
+  //   if(this.currentFile == file.name)
+  //   {
+  //     this.codeEditor.setValue(temp.data);
+  //   }
+  //   if(this.currentFile=="")
+  //   {
+  //     this.currentFile = file.name;
+  //     this.codeEditor.setValue(temp.data);
+  //     this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
+  //   }
+  // }
 
   private download(currentDownloadStatus: DownloadStatus): void 
   {
@@ -104,7 +188,8 @@ export class StudentCodeEditorComponent implements OnInit {
         ++line;
       }
       console.log(data);
-      zip.file(this.fileNoteMap[i].fileName, data);
+      var lang = this.files.find(element => element.name == this.fileNoteMap[i].fileName).language
+      zip.file(this.fileNoteMap[i].fileName + "." + lang, data);
     }
 
     zip.generateAsync({type:"blob"})
@@ -178,27 +263,7 @@ export class StudentCodeEditorComponent implements OnInit {
       return -1;
   }
 
-  public updateFileData(file: File): void {
-    if(this.files.find(element => element.name == file.name)==undefined)
-    {
-      var tempFile = new File(file.name,file.data);
-      this.files.push(tempFile);
-      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-    }
-    var temp = this.files.find(element => element.name == file.name);
-    this.resolveNotePositioning(temp.data,file.data);
-    temp.data = file.data;
-    if(this.currentFile == file.name)
-    {
-      this.codeEditor.setValue(temp.data);
-    }
-    if(this.currentFile=="")
-    {
-      this.currentFile = file.name;
-      this.codeEditor.setValue(temp.data);
-      this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
-    }
-  }
+  
 
   resolveNotePositioning(temp: string,file: string)
   {
@@ -388,21 +453,6 @@ export class StudentCodeEditorComponent implements OnInit {
     }
   }
 
-  public changeCurrentFile(currFile: string): void {
-    if ((this.currentFile!=currFile)&&(this.files.length > 0)) {
-      this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
-      this.currentFile = currFile;
-      if(this.files.find(element => element.name == this.currentFile)==undefined)
-      {
-        var tempFile = new File(this.currentFile,"");
-        this.files.push(tempFile);
-        this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-      }
-      this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
-      this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
-    }
-  }
-
   changeCurrentLine()
   {
     let temp = this.codeEditor.selection.getCursor().row;
@@ -415,12 +465,6 @@ export class StudentCodeEditorComponent implements OnInit {
     {
       this.totalCodeLength = temp;
     }
-  }
-
-  getLangs(){
-    this._codeEditorService.getLangs().subscribe(data=>{
-        this.langArray = data.body['langMap'];
-    });
   }
 
   /************************************************************************EDITOR FUNCTIONS************************************************/
@@ -444,6 +488,7 @@ export class StudentCodeEditorComponent implements OnInit {
     this.codeEditor = ace.edit(element, editorOptions);
     this.codeEditor.setTheme(this.themes[0].actual_name);
     this.codeEditor.getSession().setMode("ace/mode/c_cpp");
+    this.lang = "c_cpp"
     this.codeEditor.setShowFoldWidgets(true);
     this.codeEditor.setReadOnly(true);
     ace.require('ace/ext/beautify');
@@ -453,13 +498,13 @@ export class StudentCodeEditorComponent implements OnInit {
    * @description
    *  set the language based on selection
    */
-  public setLanguage(language: string ): void {
-    if (this.codeEditor) {
-      this.lang = language;
-      var mode = "ace/mode/" + language;
-      this.codeEditor.getSession().setMode(mode);
-    }
-  }
+  // public setLanguage(language: string ): void {
+  //   if (this.codeEditor) {
+  //     this.lang = language;
+  //     var mode = "ace/mode/" + language;
+  //     this.codeEditor.getSession().setMode(mode);
+  //   }
+  // }
   
   /**
    * @description
@@ -473,16 +518,12 @@ export class StudentCodeEditorComponent implements OnInit {
 
   public runCode():void {
       const code = this.codeEditor.getValue();
-      this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
+      this._codeEditorService.getOutput(code,this.langArray.find(element => element.ext == this.lang).name).subscribe(data=>{
         // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
         this.outputString = this.response.output;
         // this.langArray = data.body['langMap'];
     });
-  } 
-
-  public selectLang(input){
-      this.lang = input;
   }
   
 }

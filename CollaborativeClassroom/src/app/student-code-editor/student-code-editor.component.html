@@ -1,12 +1,31 @@
-<div class="row h-100 mt-4 mr-4">
-    <div class="col-7">
+<div class="row mt-4">
+    <div class="col-2 mt-4">
+        <div *ngIf="!isStudent; then addFileInput"></div>
+        <ng-template #addFileInput>
+            <button class="mb-4 ml-4" mat-raised-button (click)="openDialog()">Add File</button>
+        </ng-template>
+        <div class="ml-4" *ngFor="let file of files">
+            <div *ngIf="currentFile == file.name; then activeFile else nonActiveFile"></div>
+                <ng-template #activeFile>
+                    <button type="button" class="list-group-item list-group-item-action active">
+                        {{file.name +"."+ file.language}}
+                    </button>
+                </ng-template>
+                <ng-template #nonActiveFile>
+                    <button type="button" (click)='changeCurrFile(file.name)' class="list-group-item list-group-item-action">
+                        {{file.name +"."+ file.language}}
+                    </button>
+                </ng-template>
+        </div>
+    </div>
+    <div class="col-6">
         <div class="row mb-2">
             <div class="input-group col-3 mb-3">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="languages-select">Languages</label>
                 </div>
-                <select class="custom-select" id="languages-select" (change)="setLanguage(languagesSelect.value)" #languagesSelect>
-                    <option *ngFor="let lang of langArray" [value]= "lang" >{{lang}}</option>
+                <select disabled class="custom-select" id="languages-select" #languagesSelect>
+                    <option [value]= "lang" >{{lang}}</option>
                 </select>
             </div>
             <div class="input-group col-3 mb-3">
@@ -45,13 +64,13 @@
             </div>
         </div>
     </div>
-    <div class="col-5">
-        <div class="d-flex justify-content-between" >
+    <div class="col-4">
+        <div class="d-flex justify-content-between mr-4" >
             <button mat-raised-button (click)="openDialog()">Add Note</button>
             <button mat-raised-button (click)="download()">Download</button>
         </div>
         
-        <ul class="list-group mt-5">
+        <ul class="list-group mt-5 mr-4">
             <div *ngFor="let note of notes">
                 <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item d-flex justify-content-between mt-2 align-items-start">
                     <pre>{{note.text}}</pre>

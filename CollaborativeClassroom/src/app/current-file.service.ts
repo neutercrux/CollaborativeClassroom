@@ -6,13 +6,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CurrentFileService {
 
-  private currentOpenFileSource = new BehaviorSubject<string>("");
-  currentOpenFile = this.currentOpenFileSource.asObservable();
+  // private currentOpenFileSource = new BehaviorSubject<[string,FileStatus]>(["",FileStatus.CREATE_FILE]);
+  // currentOpenFile = this.currentOpenFileSource.asObservable();
 
-  constructor() { }
+  // constructor() { }
 
-  changeCurrentFile(currentOpenFile: string)
-  {
-    this.currentOpenFileSource.next(currentOpenFile)
-  }
+  // changeCurrentFile(currentOpenFile: [string,FileStatus])
+  // {
+  //   this.currentOpenFileSource.next(currentOpenFile)
+  // }
 }

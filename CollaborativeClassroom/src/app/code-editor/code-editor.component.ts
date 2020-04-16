@@ -2,8 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
-import { File } from '../file';
-import { CurrentFileService } from '../current-file.service';
+import { File, FileStatus } from '../file';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -25,6 +24,10 @@ import 'brace/mode/javascript';
 import 'brace/mode/text';
 import { WebsocketService } from '../websocket.service';
 import { CodeService } from '../code.service';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { FileDialogComponent } from '../file-dialog/file-dialog.component';
+import { ILanguage, LANGUAGES } from '../language';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-code-editor',
@@ -37,7 +40,7 @@ export class CodeEditorComponent implements OnInit {
   private themes = THEMES;
   private files: File[] = [];
   private currentFile: string = "";
-  private langArray;
+  private langArray: ILanguage[] = LANGUAGES;
   private outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
@@ -45,19 +48,14 @@ export class CodeEditorComponent implements OnInit {
   timer;
   sess: string;
 
-  constructor(private code : CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService,private webSocketService:WebsocketService) { }
+  constructor(public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
-    this.getLangs();
-    
   }
 
   ngAfterViewInit() {
     this.initializeEditor();
-    this.timer = setInterval(() => { this.publish(); }, 2000);
-    var temp = new File(this.currentFile,"");
-    this.files.push(temp);
-    this._currentFile.currentOpenFile.subscribe(currentOpenFile => this.changeCurrentFile(currentOpenFile))
+    this.codeEditor.setReadOnly(true);
   }
 
   publish() {
@@ -67,31 +65,108 @@ export class CodeEditorComponent implements OnInit {
       this.sess = new_sess;
       let temp = this.files.find(element => element.name == this.currentFile);
       temp.data = this.sess;
-      this.code.sendFile(temp);
+      this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.currentFile + "." + temp.language, 'filecode' : temp.data });
     }
   }
 
-  public changeCurrentFile(currFile: string): void {
-    if (this.currentFile!=currFile) {
-      this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
-      this.currentFile = currFile;
-      if(this.files.find(element => element.name == this.currentFile)==undefined)
-      {
-        var tempFile = new File(this.currentFile,"");
-        this.files.push(tempFile);
-      }
-      let temp = this.files.find(element => element.name == this.currentFile);
-      this.codeEditor.setValue(temp.data);
-      this.code.sendFile(temp);
-    }
-  }
+  openDialog(): void {
+    const dialogRef = this.dialog.open(FileDialogComponent, {
+      height: '200px',
+      width: '600px',
+      data: ""
+    });
 
-  getLangs(){
-    this._codeEditorService.getLangs().subscribe(data=>{
-        this.langArray = data.body['langMap'];
-        console.log(this.langArray);
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if(result!=undefined)
+        this.addFile(result)
     });
   }
+
+  editFileDialog(filename: string): void
+  {
+
+    const dialogRef = this.dialog.open(FileDialogComponent, {
+      height: '200px',
+      width: '600px',
+      data: filename
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if(result!=undefined)
+        this.updateFile(filename,result)
+    });
+  }
+
+  addFile(filename: string)
+  {
+    if((this.files.find(element => element.name == filename)==undefined)&&(filename!=""))
+    {
+      var tempFile = new File(filename,"",this.lang);
+      this.files.push(tempFile);
+      if(this.currentFile=="")
+      {
+        this.codeEditor.setReadOnly(false);
+        this.timer = setInterval(() => { this.publish(); }, 2000);
+      }
+      this.code.sendFile({ 'fileStatus' : FileStatus.CREATE_FILE, 'filename' : filename + "." + this.lang});
+      this.switchCurrFile(filename);
+    }
+    else
+    {
+      console.log("Choose a different name");
+    }
+  }
+
+  switchCurrFile(file: string)
+  {
+    if(this.currentFile!="")
+      this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
+    this.currentFile = file;
+    let temp = this.files.find(element => element.name == this.currentFile);
+    this.codeEditor.setValue(temp.data);
+    this.lang = temp.language;
+    this.codeEditor.getSession().setMode("ace/mode/" + this.langArray.find(element => element.ext == temp.language).name);
+  }
+
+  updateFile(oldFileName: string, newFileName: string)
+  {
+    this.files.find(element => element.name == oldFileName).name = newFileName;
+    var lang = this.files.find(element => element.name == oldFileName).language;
+    this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE, 'filename' : oldFileName + "." + lang, 'newfilename' : newFileName + "." + this.lang });
+  }
+
+  deleteFile(fileName: string)
+  {
+    var file = this.files.find(element => element.name == fileName);
+    var lang = file.language;
+    var i = this.files.indexOf(file);
+    this.files.splice(i,1);
+    this.code.sendFile({ 'fileStatus' : FileStatus.DELETE_FILE, 'filename' : fileName + "." + lang });
+  }
+
+  // public changeCurrentFile(currFile: string): void {
+  //   if (this.currentFile!=currFile) {
+  //     this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
+  //     this.currentFile = currFile;
+  //     if(this.files.find(element => element.name == this.currentFile)==undefined)
+  //     {
+  //       var tempFile = new File(this.currentFile,"");
+  //       this.files.push(tempFile);
+  //     }
+  //     let temp = this.files.find(element => element.name == this.currentFile);
+  //     this.codeEditor.setValue(temp.data);
+  //     this.code.sendFile(temp);
+  //   }
+  // }
+
+  // getLangs(){
+  //   this._codeEditorService.getLangs().subscribe(data=>{
+  //       this.langArray = data.body['langMap'];
+  //       console.log(this.langArray);
+  //   });
+  // }
 
   /************************************************************************EDITOR FUNCTIONS************************************************/
   // missing propery on EditorOptions 'enableBasicAutocompletion' so this is a workaround still using ts
@@ -114,6 +189,7 @@ export class CodeEditorComponent implements OnInit {
     this.codeEditor = ace.edit(element, editorOptions);
     this.codeEditor.setTheme(this.themes[0].actual_name);
     this.codeEditor.getSession().setMode("ace/mode/c_cpp");
+    this.lang = "cpp"
     this.codeEditor.setShowFoldWidgets(true);
     // hold reference to beautify extension
     ace.require('ace/ext/beautify');
@@ -142,7 +218,9 @@ export class CodeEditorComponent implements OnInit {
    */
   public setLanguage(language: string ): void {
     if (this.codeEditor) {
-      this.lang = language;
+      this.lang = this.langArray.find(element => element.name == language).ext
+      this.files.find(element => element.name == this.currentFile).language = this.lang
+      this.updateFile(this.currentFile,this.currentFile);
       var mode = "ace/mode/" + language;
       this.codeEditor.getSession().setMode(mode);
     }
@@ -171,7 +249,7 @@ export class CodeEditorComponent implements OnInit {
 
   public runCode():void {
       const code = this.codeEditor.getValue();
-      this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
+      this._codeEditorService.getOutput(code,this.langArray.find(element => element.ext == this.lang).name).subscribe(data=>{
         // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
         this.outputString = this.response.output;
@@ -179,11 +257,4 @@ export class CodeEditorComponent implements OnInit {
         // console.log(this.outputString)
     });
   }
-  
-
-  public selectLang(input){
-      this.lang = input;
-  }
-
-  
 }

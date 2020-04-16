@@ -13,7 +13,6 @@ import { MatMenuModule} from '@angular/material/menu';
 import { NotifierModule, NotifierOptions } from 'angular-notifier';
 
 import { CodeEditorComponent } from './code-editor/code-editor.component';
-import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { MainPageComponent } from './main-page/main-page.component';
 import { RegisterComponent } from './register/register.component';
 import { NgxPubSubModule } from '@pscoped/ngx-pub-sub';
@@ -74,7 +73,6 @@ const customNotifierOptions: NotifierOptions = {
     AppComponent,
     LoginComponent,
     CodeEditorComponent,
-    FileExplorerComponent,
     MainPageComponent,
     RegisterComponent,
     StudentCodeEditorComponent,

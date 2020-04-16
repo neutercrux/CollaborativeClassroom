@@ -22,8 +22,8 @@ export class CodeService {
 
   // Our simplified interface for sending
   // messages back to our socket.io server
-  sendFile(code: File) {
-    this.messages.next({ 'filename' : code.name, 'filecode' : code.data});
+  sendFile(code: any) {
+    this.messages.next(code);
   }
 
 }
