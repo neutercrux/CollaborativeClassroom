@@ -1,21 +1,21 @@
-##Project ID
+## Project ID
 PW20VR03
 
-##Project Type
+## Project Type
 Minor
 
-##Project Title
+## Project Title
 Collaborative Classroom
 
-##Team Members
+## Team Members
 Aishwarya Venkatesh (01FB16ECS428)
 Yamini Agarwal      (01FB16ECS456)
 Yash R Patil        (01FB16ECS457)
 
-##Project Guide
+## Project Guide
 Ms. Vidhu Rojit
 
-##Project Abstract
+## Project Abstract
 The goal of this project is to develop a collaborative interface for the use of students and teachers
 during an offline lecture that involves developing code on the fly as part of the teaching process. This
 solution addresses issues like the redundancy of copying code from the display to make relevant notes
@@ -25,7 +25,7 @@ unwanted overheads. The provision of downloadable content ensures better documen
 lecture for future context and reference. This interface is designed as a standalone application that aims
 to aid offline lectures, it does not intend to replace them at all.
 
-##Code Execution
+## Code Execution
 
 1. Execute the following command to install nodejs
 ```bash
