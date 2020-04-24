@@ -47,3 +47,6 @@ node index.js
 ```bash
 http-server dist/CollaborativeClassroom
 ```
+7. Click on the [link](http://127.0.0.1:8080) in the terminal to open the website in the browser.
+8. Register and login as teacher in one of the browser tab.
+9. Open the link with the IP address on another device and register and login as student.
