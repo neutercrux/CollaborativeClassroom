@@ -31,7 +31,19 @@ to aid offline lectures, it does not intend to replace them at all.
 ```bash
 sudo apt install nodejs
 ```
-2. Execute the following command to install angular 8
+2. Install mongodb using the command
 ```bash
-npm install -g @angular/cli
+sudo apt install -y mongodb
+```
+3. Install http-server globally using the command
+```bash
+sudo apt install -y mongodb
+```
+5. Execute the following command to run the nodejs backend
+```bash
+node index.js
+```
+6. Host the angular project locally using the command 
+```bash
+http-server dist/CollaborativeClassroom
 ```
