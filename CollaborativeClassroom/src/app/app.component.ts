@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
+// import { NgxPubSubService } from '@pscoped/ngx-pub-sub';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ export class AppComponent {
   title = 'CollaborativeClassroom';
   latestEvent = 'randomLast';
   
-  constructor(pubsubSvc: NgxPubSubService){
-    pubsubSvc.registerEventWithLastValue(this.latestEvent, undefined);
+  constructor(){
+    // pubsubSvc.registerEventWithLastValue(this.latestEvent, undefined);
   }
 }

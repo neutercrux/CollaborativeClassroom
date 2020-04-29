@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CodeEditorComponent } from './code-editor.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('CodeEditorComponent', () => {
   let component: CodeEditorComponent;
@@ -8,7 +10,9 @@ describe('CodeEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CodeEditorComponent ]
+      declarations: [ CodeEditorComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
+      imports: [HttpClientTestingModule], 
     })
     .compileComponents();
   }));
