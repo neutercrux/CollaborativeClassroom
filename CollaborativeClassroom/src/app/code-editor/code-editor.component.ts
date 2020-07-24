@@ -39,12 +39,12 @@ import { DownloadStatus, DownloadService } from '../download.service';
 })
 export class CodeEditorComponent implements OnInit {
 
-  private codeEditor: ace.Ace.Editor;
-  private themes = THEMES;
-  private files: File[] = [];
-  private currentFile: string = "";
-  private langArray: ILanguage[] = LANGUAGES;
-  private outputString: string = "";
+  public codeEditor: ace.Ace.Editor;
+  public themes = THEMES;
+  public files: File[] = [];
+  public currentFile: string = "";
+  public langArray: ILanguage[] = LANGUAGES;
+  public outputString: string = "";
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   lang: string;
@@ -72,7 +72,7 @@ export class CodeEditorComponent implements OnInit {
     }
   }
 
-  private download(currentDownloadStatus: DownloadStatus): void 
+  public download(currentDownloadStatus: DownloadStatus = DownloadStatus.Start): void 
   {
     var zip = new JSZip();
     for (let i in this.files)

@@ -22,7 +22,7 @@ export class DoubtComponent implements OnInit {
   numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
   name:String = sessionStorage.getItem("name");;
   designation:String = sessionStorage.getItem("designation");
-  @Input() private isStudent: boolean;
+  @Input() public isStudent: boolean;
   questionSelected:any;
 
   constructor(private _download: DownloadService,private doubtService:DoubtService,private sanitizer: DomSanitizer) { 
