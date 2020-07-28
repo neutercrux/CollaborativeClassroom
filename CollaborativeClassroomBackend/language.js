@@ -28,4 +28,8 @@ langDetails = new Language('php','5.6.16','0');
 lang = 'php';
 myLangMap.set(lang,langDetails);
 
+langDetails = new Language('nodejs','12.11.1','3');
+lang = 'nodejs';
+myLangMap.set(lang,langDetails);
+
 module.exports = myLangMap;

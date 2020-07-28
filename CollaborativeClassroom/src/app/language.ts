@@ -9,5 +9,6 @@ export const LANGUAGES: ILanguage[] = [
     { name: "java", ext: "java", comment_syntax: "//" },
     { name: "python", ext: "py", comment_syntax: "#" },
     { name: "csharp", ext: "cs", comment_syntax: "//" },
-    { name: "ruby", ext: "rb", comment_syntax: "#" }
+    { name: "ruby", ext: "rb", comment_syntax: "#" },
+    { name: "nodejs", ext: "js", comment_syntax: "//"}
 ]
