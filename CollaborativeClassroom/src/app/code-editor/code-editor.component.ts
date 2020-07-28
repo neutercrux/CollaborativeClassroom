@@ -3,6 +3,7 @@ import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
 import { File, FileStatus } from '../file';
+import { Status } from '../message';
 
 import 'ace-builds/src-noconflict/mode-java';
 import 'ace-builds/src-noconflict/mode-python';
@@ -59,6 +60,10 @@ export class CodeEditorComponent implements OnInit {
   ngAfterViewInit() {
     this.initializeEditor();
     this.codeEditor.setReadOnly(true);
+    this.code.messages.subscribe(msg => {
+      msg = JSON.parse(msg);
+      this.parseMsg(msg);
+    })
   }
 
   publish() {
@@ -69,6 +74,18 @@ export class CodeEditorComponent implements OnInit {
       let temp = this.files.find(element => element.name == this.currentFile);
       temp.data = this.sess;
       this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.currentFile + "." + temp.language, 'filecode' : temp.data });
+    }
+  }
+
+  private parseMsg(msg: any)
+  {
+    console.log(msg);
+    if(msg.status == Status.SEND_ALL_FILES)
+    {
+      for (let i in this.files)
+      {
+        this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.files[i].name + "." + this.files[i].language, 'filecode' : this.files[i].data });
+      }
     }
   }
 

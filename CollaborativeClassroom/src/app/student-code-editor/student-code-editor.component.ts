@@ -3,6 +3,7 @@ import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
 import { File, FileStatus } from '../file';
+import { Status } from '../message';
 import { Note } from '../note';
 import { FileNoteMap } from '../filenotemap';
 import { CurrentFileService } from '../current-file.service';
@@ -74,6 +75,7 @@ export class StudentCodeEditorComponent implements OnInit {
       msg = JSON.parse(msg);
       this.fileOperations(msg);
     })
+    this.code.sendFile({ 'status' : Status.SEND_ALL_FILES});
   }
 
   ngOnDestroy() {
@@ -82,39 +84,40 @@ export class StudentCodeEditorComponent implements OnInit {
   private fileOperations(msg: any)
   {
     console.log(msg);
-    if(msg.fileStatus == FileStatus.CREATE_FILE)
+    if(msg.status != Status.SEND_ALL_FILES)
     {
       var nameArr = msg.filename.split(".");
-      var tempFile = new File(nameArr[0],"",nameArr[1]);
-      this.files.push(tempFile);
-      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-      if(this.currentFile=="")
-        this.changeCurrFile(tempFile.name)
-    }
-    else if(msg.fileStatus == FileStatus.UPDATE_FILE)
-    {
-      var nameArr = msg.filename.split(".");
-      var newNameArr = msg.newfilename.split(".");
-      if(this.currentFile==nameArr[0])
+      if((msg.fileStatus == FileStatus.CREATE_FILE)||(!this.files.find(element => element.name == nameArr[0])))
       {
-        this.currentFile = newNameArr[0];
-        this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
-        this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+        var tempFile = new File(nameArr[0],"",nameArr[1]);
+        this.files.push(tempFile);
+        this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+        if(this.currentFile=="")
+          this.changeCurrFile(tempFile.name)
       }
-      this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
-      this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
-      this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
-      
-
-    }
-    else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
-    {
-      var nameArr = msg.filename.split(".");
-      this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
-      this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
-      if(this.currentFile==nameArr[0])
+      if(msg.fileStatus == FileStatus.UPDATE_FILE)
       {
-        this.codeEditor.setValue(msg.filecode);
+        var newNameArr = msg.newfilename.split(".");
+        if(this.currentFile==nameArr[0])
+        {
+          this.currentFile = newNameArr[0];
+          this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
+          this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+        }
+        this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
+        this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
+        this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
+        
+
+      }
+      else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
+      {
+        this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
+        this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
+        if(this.currentFile==nameArr[0])
+        {
+          this.codeEditor.setValue(msg.filecode);
+        }
       }
     }
   }
@@ -169,11 +172,11 @@ export class StudentCodeEditorComponent implements OnInit {
   public download(currentDownloadStatus: DownloadStatus = DownloadStatus.Start): void 
   {
     var zip = new JSZip();
-    var comment: string = "//";
+    var comment: string = "";
     for (let i in this.fileNoteMap)
     {
       let x = this.files.find(element => element.name == this.fileNoteMap[i].fileName);
-      comment = this.langArray.find(element => element.ext = x.language).comment_syntax;
+      comment = this.langArray.find(element => element.ext == x.language).comment_syntax;
       let y = this.fileNoteMap[i].notes
       var line: number = 0;
       var arr = x.data.split("\n");
@@ -194,11 +197,11 @@ export class StudentCodeEditorComponent implements OnInit {
       zip.file(this.fileNoteMap[i].fileName + "." + lang, data);
     }
 
-    zip.generateAsync({type:"blob"})
-    .then(function(content) {
-        saveAs(content, "files.zip");
-    });
-    this._download.changeDownloadStatus(DownloadStatus.Start);
+    // zip.generateAsync({type:"blob"})
+    // .then(function(content) {
+    //     saveAs(content, "files.zip");
+    // });
+    // this._download.changeDownloadStatus(DownloadStatus.Start);
   }
 
   openDialog(): void {
