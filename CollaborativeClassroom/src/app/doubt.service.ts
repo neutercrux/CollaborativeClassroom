@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class DoubtService {
 
-  private url = 'http://localhost:3000/';
+  private url = '/';
   private socket;
 
   constructor() {

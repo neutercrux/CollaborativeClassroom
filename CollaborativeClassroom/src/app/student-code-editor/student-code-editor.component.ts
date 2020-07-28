@@ -523,7 +523,8 @@ export class StudentCodeEditorComponent implements OnInit {
 
   public runCode():void {
       const code = this.codeEditor.getValue();
-      this._codeEditorService.getOutput(code,this.langArray.find(element => element.ext == this.lang).name).subscribe(data=>{
+      console.log(this.lang);
+      this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
         // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
         this.outputString = this.response.output;

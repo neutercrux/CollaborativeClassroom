@@ -287,6 +287,8 @@ export class CodeEditorComponent implements OnInit {
 
   public runCode():void {
       const code = this.codeEditor.getValue();
+      // console.log(this.lang)
+      // console.log(this.langArray.find(element => element.ext == this.lang).name)
       this._codeEditorService.getOutput(code,this.langArray.find(element => element.ext == this.lang).name).subscribe(data=>{
         // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))
