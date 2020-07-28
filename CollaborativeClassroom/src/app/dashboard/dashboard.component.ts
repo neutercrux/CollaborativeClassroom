@@ -12,10 +12,10 @@ export class DashboardComponent implements OnInit {
   constructor(private router: Router,private Auth: AuthService) { }
   address : any;
   ngOnInit() {
-    this.Auth.getIp().subscribe(data => {
-      console.log(data);
-      this.address = data.body['address']
-    })
+    // this.Auth.getIp().subscribe(data => {
+    //   console.log(data);
+    //   this.address = data.body['address']
+    // })
   }
   
   viewData(event){

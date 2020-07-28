@@ -13,6 +13,10 @@ myLangMap = require('../language')
 var jDoodleClientID = "fe0e6da657e816473e2dece16a3851ca";
 var jDoodleClientSecret = "3cc1302bbda2100b2426ad3a05fa246ddca4cfab3282a9df6694ef254e1e611f";
 
+exports.index = function(req,res) {
+    res.render('index.html')
+}
+
 exports.signUp = function (req, res) {
     var desig;
     var re = "01UF110VR"; ///(a|b)*abb/i;
@@ -120,7 +124,7 @@ exports.updateData = function(req,res){
             });
         studentData.push(new_user);
     })
-    User.remove({})
+    User.remove({designation:"student"})
         .then(r => {
             console.log(r);
             User.insertMany(studentData)

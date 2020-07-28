@@ -18,6 +18,10 @@ app.use(function(req,res,next){
   next();
 });
 
+// app.use(express.static('views/CollaborativeClassroom'))
+// app.set('view engine', 'html');
+// app.engine('html', require('ejs').renderFile);
+
 var routes = require('./routes/Routes'); //importing route
 routes(app); //register the route
 
