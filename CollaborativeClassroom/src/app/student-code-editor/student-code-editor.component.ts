@@ -31,6 +31,7 @@ import 'brace/mode/html';
 import 'brace/mode/javascript';
 import 'brace/mode/text';
 import { WebsocketService } from '../websocket.service';
+import { JoinService } from '../join.service';
 import { CodeService } from '../code.service';
 import { element } from 'protractor';
 import { NoteDialogComponent } from '../note-dialog/note-dialog.component';
@@ -53,6 +54,8 @@ export class StudentCodeEditorComponent implements OnInit {
   public langArray: ILanguage[] = LANGUAGES;
   public langComments: string[] = [];
   public outputString: string = "";
+  private usn:String = sessionStorage.getItem("name");;
+  private designation:String = sessionStorage.getItem("designation");
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   currentLine: number;
@@ -60,7 +63,7 @@ export class StudentCodeEditorComponent implements OnInit {
   lineTimer;
   lang: string;
 
-  constructor(private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(private joinService: JoinService,private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
   }
@@ -71,6 +74,7 @@ export class StudentCodeEditorComponent implements OnInit {
     this.lineTimer = setInterval(()=>{ 
       this.changeCurrentLine()
     }, 1000);
+    this.joinService.sendDetails(this.usn, this.designation);
     this.code.messages.subscribe(msg => {
       msg = JSON.parse(msg);
       this.fileOperations(msg);
@@ -84,40 +88,37 @@ export class StudentCodeEditorComponent implements OnInit {
   private fileOperations(msg: any)
   {
     console.log(msg);
-    if(msg.status != Status.SEND_ALL_FILES)
+    var nameArr = msg.filename.split(".");
+    if((msg.fileStatus == FileStatus.CREATE_FILE)||(!this.files.find(element => element.name == nameArr[0])))
     {
-      var nameArr = msg.filename.split(".");
-      if((msg.fileStatus == FileStatus.CREATE_FILE)||(!this.files.find(element => element.name == nameArr[0])))
+      var tempFile = new File(nameArr[0],"",nameArr[1]);
+      this.files.push(tempFile);
+      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+      if(this.currentFile=="")
+        this.changeCurrFile(tempFile.name)
+    }
+    if(msg.fileStatus == FileStatus.UPDATE_FILE)
+    {
+      var newNameArr = msg.newfilename.split(".");
+      if(this.currentFile==nameArr[0])
       {
-        var tempFile = new File(nameArr[0],"",nameArr[1]);
-        this.files.push(tempFile);
-        this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-        if(this.currentFile=="")
-          this.changeCurrFile(tempFile.name)
+        this.currentFile = newNameArr[0];
+        this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
+        this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
       }
-      if(msg.fileStatus == FileStatus.UPDATE_FILE)
-      {
-        var newNameArr = msg.newfilename.split(".");
-        if(this.currentFile==nameArr[0])
-        {
-          this.currentFile = newNameArr[0];
-          this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
-          this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
-        }
-        this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
-        this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
-        this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
-        
+      this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
+      this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
+      this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
+      
 
-      }
-      else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
+    }
+    else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
+    {
+      this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
+      this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
+      if(this.currentFile==nameArr[0])
       {
-        this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
-        this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
-        if(this.currentFile==nameArr[0])
-        {
-          this.codeEditor.setValue(msg.filecode);
-        }
+        this.codeEditor.setValue(msg.filecode);
       }
     }
   }
@@ -197,11 +198,11 @@ export class StudentCodeEditorComponent implements OnInit {
       zip.file(this.fileNoteMap[i].fileName + "." + lang, data);
     }
 
-    // zip.generateAsync({type:"blob"})
-    // .then(function(content) {
-    //     saveAs(content, "files.zip");
-    // });
-    // this._download.changeDownloadStatus(DownloadStatus.Start);
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
+        saveAs(content, "files.zip");
+    });
+    this._download.changeDownloadStatus(DownloadStatus.Start);
   }
 
   openDialog(): void {

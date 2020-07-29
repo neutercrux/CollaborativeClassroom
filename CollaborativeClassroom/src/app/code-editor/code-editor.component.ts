@@ -33,6 +33,7 @@ import { element } from 'protractor';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DownloadStatus, DownloadService } from '../download.service';
+import { JoinService } from '../join.service';
 
 @Component({
   selector: 'app-code-editor',
@@ -47,13 +48,15 @@ export class CodeEditorComponent implements OnInit {
   public currentFile: string = "";
   public langArray: ILanguage[] = LANGUAGES;
   public outputString: string = "";
+  private usn:String = sessionStorage.getItem("name");;
+  private designation:String = sessionStorage.getItem("designation");
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   lang: string;
   timer;
   sess: string;
 
-  constructor(private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
+  constructor(private joinService:JoinService ,private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
   }
@@ -62,9 +65,11 @@ export class CodeEditorComponent implements OnInit {
     this.initializeEditor();
     this.codeEditor.setReadOnly(true);
     this.code.messages.subscribe(msg => {
+      console.log(msg)
       msg = JSON.parse(msg);
       this.parseMsg(msg);
     })
+    this.joinService.sendDetails(this.usn, this.designation)
   }
 
   publish() {
@@ -85,7 +90,7 @@ export class CodeEditorComponent implements OnInit {
     {
       for (let i in this.files)
       {
-        this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.files[i].name + "." + this.files[i].language, 'filecode' : this.files[i].data });
+        this.code.sendFile({ 'socket_id': msg.socket_id, 'status': Status.SENDING_ALL_FILES, 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.files[i].name + "." + this.files[i].language, 'filecode' : this.files[i].data });
       }
     }
   }
