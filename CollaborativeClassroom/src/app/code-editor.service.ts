@@ -7,7 +7,7 @@ import { HttpClient,HttpParams } from '@angular/common/http';
 })
 export class CodeEditorService {
 
-  private _url_lang: string = "/api/v1/langs";
+  private _url_lang: string = "http://localhost:3000/api/v1/langs";
 
   constructor(private http : HttpClient) { }
 
@@ -17,7 +17,7 @@ export class CodeEditorService {
 
   getOutput(code,lang)
   {
-    return this.http.post("/api/v1/run",{"program":code,"lang":lang},
+    return this.http.post("http://localhost:3000/api/v1/run",{"program":code,"lang":lang},
                         {observe:'response'})
   }
 }

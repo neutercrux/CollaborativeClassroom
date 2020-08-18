@@ -29,8 +29,10 @@ function Person(usn, socket_id, designation){
 }
 
 var activeUsers = new Array();
-
 var teacherUser;
+var quesNo = 0;
+var id = 0;
+var msgArr = new Array();
 
 var routes = require('./routes/Routes'); //importing route
 routes(app); //register the route
@@ -45,30 +47,28 @@ io.on("connection", socket => {
     console.log("user disconnected");
   });
 
-  // When we receive a 'message' event from our client, print out
-  // the contents of that message and then echo it back to our client
-  // using `io.emit()`
   socket.on("message", message => {
     // console.log(message);
     // console.log(message.status);
-    if(message.status!=undefined)
-    {
-      if((message.status == 0)&&(teacherUser))
-      {
-        console.log(teacherUser.socket_id)
-        message.socket_id = socket.id;
-        socket.broadcast.to(teacherUser.socket_id).emit("message", JSON.stringify(message));
-      }
-      else if((message.status == 1)&&(teacherUser))
-      {
-        console.log(message.socket_id);
-        socket.broadcast.to(message.socket_id).emit("message", JSON.stringify(message));
-      }
-    }
-    else
-    {
-      socket.broadcast.emit("message", JSON.stringify(message));
-    }
+    // if(message.status!=undefined)
+    // {
+    //   if((message.status == 0)&&(teacherUser))
+    //   {
+    //     console.log(teacherUser.socket_id)
+    //     message.socket_id = socket.id;
+    //     socket.broadcast.to(teacherUser.socket_id).emit("message", JSON.stringify(message));
+    //   }
+    //   else if((message.status == 1)&&(teacherUser))
+    //   {
+    //     console.log(message.socket_id);
+    //     socket.broadcast.to(message.socket_id).emit("message", JSON.stringify(message));
+    //   }
+    // }
+    // else
+    // {
+    //   socket.broadcast.emit("message", JSON.stringify(message));
+    // }
+    socket.broadcast.emit("message", JSON.stringify(message));
   });
 
   socket.on("join", message => {
@@ -88,7 +88,24 @@ io.on("connection", socket => {
   });
 
   socket.on('new-doubt', (message) => {
+    message.id = ++id
+    if(message.designation == "teacher")
+    {
+
+    }
+    else
+    {
+      message.qno = ++quesNo
+    }
     io.emit('new-doubt', message);
+    msgArr.push(message)
+  });
+
+  socket.on('get-doubts', (message) => {
+    for(i = 0; i <msgArr.length; ++i)
+    {
+      io.emit('new-doubt', msgArr[i]);
+    }
   });
 
 });

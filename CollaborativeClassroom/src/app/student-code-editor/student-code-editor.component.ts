@@ -88,39 +88,43 @@ export class StudentCodeEditorComponent implements OnInit {
   private fileOperations(msg: any)
   {
     console.log(msg);
-    var nameArr = msg.filename.split(".");
-    if((msg.fileStatus == FileStatus.CREATE_FILE)||(!this.files.find(element => element.name == nameArr[0])))
+    if(msg.status != 0)
     {
-      var tempFile = new File(nameArr[0],"",nameArr[1]);
-      this.files.push(tempFile);
-      this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-      if(this.currentFile=="")
-        this.changeCurrFile(tempFile.name)
-    }
-    if(msg.fileStatus == FileStatus.UPDATE_FILE)
-    {
-      var newNameArr = msg.newfilename.split(".");
-      if(this.currentFile==nameArr[0])
+      var nameArr = msg.filename.split(".");
+      if((msg.fileStatus == FileStatus.CREATE_FILE)||(!this.files.find(element => element.name == nameArr[0])))
       {
-        this.currentFile = newNameArr[0];
-        this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
-        this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+        var tempFile = new File(nameArr[0],"",nameArr[1]);
+        this.files.push(tempFile);
+        this.fileNoteMap.push(new FileNoteMap(tempFile.name));
+        if(this.currentFile=="")
+          this.changeCurrFile(tempFile.name)
       }
-      this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
-      this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
-      this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
-      
+      if(msg.fileStatus == FileStatus.UPDATE_FILE)
+      {
+        var newNameArr = msg.newfilename.split(".");
+        if(this.currentFile==nameArr[0])
+        {
+          this.currentFile = newNameArr[0];
+          this.lang = this.langArray.find(element => element.ext == newNameArr[1]).name
+          this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
+        }
+        this.files.find(element => element.name == nameArr[0]).name = newNameArr[0];
+        this.files.find(element => element.name == newNameArr[0]).language = newNameArr[1];
+        this.fileNoteMap.find(element => element.fileName == nameArr[0]).fileName = newNameArr[0];
+        
 
-    }
-    else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
-    {
-      this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
-      this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
-      if(this.currentFile==nameArr[0])
+      }
+      else if(msg.fileStatus == FileStatus.UPDATE_FILE_DATA)
       {
-        this.codeEditor.setValue(msg.filecode);
+        this.files.find(element => element.name == nameArr[0]).data = msg.filecode;
+        this.files.find(element => element.name == nameArr[0]).language = nameArr[1];
+        if(this.currentFile==nameArr[0])
+        {
+          this.codeEditor.setValue(msg.filecode);
+        }
       }
     }
+    
   }
 
   changeCurrFile(newFile: string)

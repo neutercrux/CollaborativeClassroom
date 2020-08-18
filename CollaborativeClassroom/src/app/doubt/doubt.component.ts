@@ -18,8 +18,8 @@ export class DoubtComponent implements OnInit {
   message: string;
   fileUrl: any;
   messages = [];
-  questionLength : number = 0;
-  numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
+  // questionLength : number = 0;
+  // numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
   name:String = sessionStorage.getItem("name");;
   designation:String = sessionStorage.getItem("designation");
   @Input() public isStudent: boolean;
@@ -29,11 +29,15 @@ export class DoubtComponent implements OnInit {
   }
 
   sendMessage() {
-    if(this.designation=='student'){
-      this.doubtService.sendMessage(this.message,this.name,this.designation,this.questionLength+1);
-    }
-    else{
-      this.doubtService.sendMessage(this.message,this.name,this.designation,this.questionSelected);
+    if(this.message!='')
+    {
+      const currentTime = moment().format('hh:mm a');
+      if(this.designation=='student'){
+        this.doubtService.sendMessage(this.message,this.name,this.designation, 0, currentTime);
+      }
+      else{
+        this.doubtService.sendMessage(this.message,this.name,this.designation, this.questionSelected, currentTime);
+      }
     }
     this.message = '';
   }
@@ -41,24 +45,26 @@ export class DoubtComponent implements OnInit {
   ngOnInit() {
     this._download.currentDownloadStatus.subscribe(currentDownloadStatus => this.downloadDoubt(currentDownloadStatus));
     this.doubtService.getMessages().subscribe((message) => {
-      if(message.message.length>0 && message.qno){
-        const currentTime = moment().format('hh:mm a');
-        const messageWithTimestamp = {'time':currentTime,'message':message.message,'user':message.name,'qno':message.qno,'designation':message.designation};
-        this.messages.push(messageWithTimestamp);
-        if(message.designation=='student'){
-          this.questionLength = this.questionLength+1;
-          this.numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
-        }
-        if(message.designation=='teacher'){
-          this.questionSelected = 0;
-        }
-      }
+      this.parseMsgs(message);
     });
-    console.log(this.messages)
+    this.doubtService.getAllMessages(this.name, this.designation)
+  }
+
+  private parseMsgs(message) {
+    if(message.message.length>0 && message.qno && (this.messages.find(element => element.id == message.id)==undefined)){
+      const messageWithTimestamp = {'time':message.currentTime,'message':message.message,'user':message.name,'qno':message.qno,'designation':message.designation,'id':message.id};
+      this.messages.push(messageWithTimestamp);
+      // if(message.designation=='student'){
+      //   this.questionLength = this.questionLength+1;
+      //   this.numbers = Array(this.questionLength).fill(0).map((x,i)=>i);
+      // }
+      if(message.designation=='teacher'){
+        this.questionSelected = 0;
+      }
+    }
   }
 
   updateQues(number){
-    console.log(number)
     this.questionSelected = number;
   }
 
