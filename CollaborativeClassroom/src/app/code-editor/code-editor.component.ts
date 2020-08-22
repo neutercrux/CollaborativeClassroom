@@ -34,6 +34,7 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DownloadStatus, DownloadService } from '../download.service';
 import { JoinService } from '../join.service';
+import { LocationService } from '../location.service';
 
 @Component({
   selector: 'app-code-editor',
@@ -46,6 +47,7 @@ export class CodeEditorComponent implements OnInit {
   public themes = THEMES;
   public files: File[] = [];
   public currentFile: string = "";
+  private currentRowLocation: number;
   public langArray: ILanguage[] = LANGUAGES;
   public outputString: string = "";
   private usn:String = sessionStorage.getItem("name");;
@@ -55,8 +57,15 @@ export class CodeEditorComponent implements OnInit {
   lang: string;
   timer;
   sess: string;
+  // public graph = {
+  //   data: [
+  //       { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'red'} },
+  //       { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
+  //   ],
+  //   layout: {width: 320, height: 240, title: 'A Fancy Plot'}
+  // };
 
-  constructor(private joinService:JoinService ,private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
+  constructor(private _locationService:LocationService, private joinService:JoinService ,private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
   }
@@ -74,12 +83,19 @@ export class CodeEditorComponent implements OnInit {
 
   publish() {
     var new_sess = this.codeEditor.getValue();
+    var new_location = this.codeEditor.getCursorPosition().row
     if(this.sess!=new_sess)
     {
       this.sess = new_sess;
       let temp = this.files.find(element => element.name == this.currentFile);
       temp.data = this.sess;
       this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE_DATA, 'filename' : this.currentFile + "." + temp.language, 'filecode' : temp.data });
+    }
+    if(this.currentRowLocation != new_location)
+    {
+      this.currentRowLocation = new_location;
+      console.log(this.currentRowLocation)
+      this._locationService.sendTeacherLocation(this.currentFile, this.currentRowLocation)
     }
   }
 
@@ -152,6 +168,7 @@ export class CodeEditorComponent implements OnInit {
       if(this.currentFile=="")
       {
         this.codeEditor.setReadOnly(false);
+        this.currentRowLocation = this.codeEditor.getCursorPosition().row
         this.timer = setInterval(() => { this.publish(); }, 2000);
       }
       this.code.sendFile({ 'fileStatus' : FileStatus.CREATE_FILE, 'filename' : filename + "." + this.lang});

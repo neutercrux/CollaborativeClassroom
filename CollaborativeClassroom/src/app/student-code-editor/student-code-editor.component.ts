@@ -37,6 +37,7 @@ import { element } from 'protractor';
 import { NoteDialogComponent } from '../note-dialog/note-dialog.component';
 import { DownloadService, DownloadStatus } from '../download.service';
 import { ILanguage,LANGUAGES} from '../language';
+import { LocationService } from '../location.service';
 
 @Component({
   selector: 'app-student-code-editor',
@@ -54,6 +55,8 @@ export class StudentCodeEditorComponent implements OnInit {
   public langArray: ILanguage[] = LANGUAGES;
   public langComments: string[] = [];
   public outputString: string = "";
+  public teacherFileLocation: string;
+  public teacherRowLocation: number;
   private usn:String = sessionStorage.getItem("name");;
   private designation:String = sessionStorage.getItem("designation");
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
@@ -61,9 +64,9 @@ export class StudentCodeEditorComponent implements OnInit {
   currentLine: number;
   totalCodeLength: number;
   lineTimer;
-  lang: string;
+  public lang: string = "c_cpp";
 
-  constructor(private joinService: JoinService,private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
+  constructor(private _locationService: LocationService, private joinService: JoinService,private _download : DownloadService,public dialog: MatDialog, private _diff: DiffMatchPatch,private code: CodeService, private _codeEditorService:CodeEditorService, private _currentFile: CurrentFileService) { }
 
   ngOnInit() {
   }
@@ -79,6 +82,9 @@ export class StudentCodeEditorComponent implements OnInit {
       msg = JSON.parse(msg);
       this.fileOperations(msg);
     })
+    this._locationService.getTeacherLocation().subscribe((message) => {
+      this.parseTeacherLocation(message);
+    });
     this.code.sendFile({ 'status' : Status.SEND_ALL_FILES});
   }
 
@@ -127,6 +133,15 @@ export class StudentCodeEditorComponent implements OnInit {
     
   }
 
+  private parseTeacherLocation(msg: any)
+  {
+    this.teacherFileLocation = msg.filename;
+    this.teacherRowLocation = msg.row;
+    console.log(this.teacherFileLocation)
+    console.log(this.teacherRowLocation)
+    this.outputString = this.teacherFileLocation + (this.teacherRowLocation+1);
+  }
+
   changeCurrFile(newFile: string)
   {
     this.currentFile = newFile;
@@ -136,43 +151,6 @@ export class StudentCodeEditorComponent implements OnInit {
     this.lang = this.langArray.find(element => element.ext == temp.language).name
     this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
   }
-
-  // public changeCurrentFile(currFile: string): void {
-  //   if ((this.currentFile!=currFile)&&(this.files.length > 0)) {
-  //     this.files.find(element => element.name == this.currentFile).data = this.codeEditor.getValue();
-  //     this.currentFile = currFile;
-  //     if(this.files.find(element => element.name == this.currentFile)==undefined)
-  //     {
-  //       var tempFile = new File(this.currentFile,"");
-  //       this.files.push(tempFile);
-  //       this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-  //     }
-  //     this.codeEditor.setValue(this.files.find(element => element.name == this.currentFile).data);
-  //     this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
-  //   }
-  // }
-
-  // public updateFileData(file: File): void {
-  //   if(this.files.find(element => element.name == file.name)==undefined)
-  //   {
-  //     var tempFile = new File(file.name,file.data);
-  //     this.files.push(tempFile);
-  //     this.fileNoteMap.push(new FileNoteMap(tempFile.name));
-  //   }
-  //   var temp = this.files.find(element => element.name == file.name);
-  //   //this.resolveNotePositioning(temp.data,file.data);
-  //   temp.data = file.data;
-  //   if(this.currentFile == file.name)
-  //   {
-  //     this.codeEditor.setValue(temp.data);
-  //   }
-  //   if(this.currentFile=="")
-  //   {
-  //     this.currentFile = file.name;
-  //     this.codeEditor.setValue(temp.data);
-  //     this.notes = this.fileNoteMap.find(element => element.fileName == this.currentFile).notes;
-  //   }
-  // }
 
   public download(currentDownloadStatus: DownloadStatus = DownloadStatus.Start): void 
   {
@@ -271,196 +249,6 @@ export class StudentCodeEditorComponent implements OnInit {
       return 0;
     else
       return -1;
-  }
-
-  
-
-  resolveNotePositioning(temp: string,file: string)
-  {
-    let diffArr = this._diff.diff_main(temp,file);
-    console.log(diffArr);
-    var lineNumber = 1;
-    for (let i in diffArr)
-    {
-      switch (diffArr[i][0])
-      {
-        case -1:
-          {
-            for(let j of diffArr[i][1])
-            {
-              if(j=="\n")
-              {
-                this.notes.forEach(function (element){
-                  if(element.lineNumber>lineNumber)
-                  {
-                    --element.lineNumber;
-                  }
-                })
-              }
-            }
-            break;
-          }
-        case 0:
-          {
-            for(let j of diffArr[i][1])
-            {
-              if(j=="\n")
-                ++lineNumber;
-            }
-            break;
-          }
-        case 1:
-          {
-            for(let j of diffArr[i][1])
-            {
-              if(j=="\n")
-              {
-                this.notes.forEach(function (element){
-                  if(element.lineNumber>=lineNumber)
-                  {
-                    ++element.lineNumber;
-                  }
-                })
-              }
-            }
-            break;
-          }
-      }
-    }
-    this.adjustNotes();
-  }
-
-  // resolveNotePositioning(temp: string,file: string)
-  // {
-  //   let diffArr = this._diff.diff_main(temp,file);
-  //   console.log(diffArr);
-  //   var lineNumber = 1;
-  //   var prevText = "";
-  //   var currentText = "";
-  //   var repositionNotes: boolean = false;
-  //   var delta: number = 0;
-  //   var repositionLine: number = 0;
-  //   for (let i in diffArr)
-  //   {
-  //     switch (diffArr[i][0])
-  //     {
-  //       case -1:
-  //         {
-  //           for(let j of diffArr[i][1])
-  //           {
-  //             if(j!="\n")
-  //               currentText+= j;
-  //             else
-  //             {
-  //               if(repositionNotes)
-  //               {
-  //                 this.repositionNotes(repositionLine,delta);
-  //               }
-  //               repositionNotes = true;
-  //               repositionLine = lineNumber;
-  //               delta = -1;
-  //               if(prevText!="" && prevText.length >= currentText.length)
-  //               {
-  //                 //console.log("added 1 to reposition")
-  //                 //++repositionLine;
-  //               }
-  //               console.log("repositionLine: "+repositionLine+" delta: "+delta+" prevText: "+prevText+" currentText: "+currentText)
-  //               prevText = currentText;
-  //               currentText = "";
-  //               // this.notes.forEach(function (element){
-  //               //   if(element.lineNumber>lineNumber)
-  //               //   {
-  //               //     --element.lineNumber;
-  //               //   }
-  //               // })
-  //             }
-  //           }
-  //           break;
-  //         }
-  //       case 0:
-  //         {
-  //           for(let j of diffArr[i][1])
-  //           {
-  //             if(j!="\n")
-  //               currentText+= j;
-  //             else
-  //             {
-  //               if(repositionNotes)
-  //               {
-  //                 this.repositionNotes(repositionLine,delta);
-  //               }
-  //               repositionNotes = false;
-  //               repositionLine = this.totalCodeLength;
-  //               delta = 0;
-  //               prevText = "";
-  //               currentText = "";
-  //               ++lineNumber;
-  //             }
-  //           }
-  //           break;
-  //         }
-  //       case 1:
-  //         {
-  //           for(let j of diffArr[i][1])
-  //           {
-  //             if(j!="\n")
-  //               currentText+= j;
-  //             else
-  //             {
-  //               if(repositionNotes)
-  //               {
-  //                 this.repositionNotes(repositionLine,delta);
-  //               }
-  //               repositionNotes = true;
-  //               repositionLine = lineNumber;
-  //               delta = 1;
-  //               if(prevText!="" && prevText.length >= currentText.length)
-  //               {
-  //                 --repositionLine;
-  //               }
-  //               console.log("repositionLine: "+repositionLine+" delta: "+delta+" prevText: "+prevText+" currentText: "+currentText)
-  //               prevText = currentText;
-  //               currentText = "";
-  //               ++lineNumber;
-  //               // this.notes.forEach(function (element){
-  //               //   if(element.lineNumber>lineNumber)
-  //               //   {
-  //               //     ++element.lineNumber;
-  //               //   }
-  //               // })
-  //             }
-  //           }
-  //           break;
-  //         }
-  //     }
-  //   }
-  //   if(repositionNotes)
-  //   {
-  //     this.repositionNotes(repositionLine,delta);
-  //   }
-  //   this.adjustNotes();
-  // }
-
-  // private repositionNotes(repositionLine: number,delta: number): void
-  // {
-  //   this.notes.forEach(function (element){
-  //     if(element.lineNumber>repositionLine)
-  //     {
-  //       element.lineNumber+=delta;
-  //     }
-  //   })
-  // }
-
-  public adjustNotes(): void
-  {
-    for(let i: number = 0;i<this.notes.length-1;++i)
-    {
-      if(this.notes[i].lineNumber == this.notes[i+1].lineNumber)
-      {
-        this.notes[i].text = this.notes[i].text + this.notes[i+1].text
-        this.notes.splice(i+1,1);
-      }
-    }
   }
 
   changeCurrentLine()

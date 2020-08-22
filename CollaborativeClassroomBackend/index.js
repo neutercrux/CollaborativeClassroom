@@ -91,7 +91,6 @@ io.on("connection", socket => {
     message.id = ++id
     if(message.designation == "teacher")
     {
-
     }
     else
     {
@@ -99,6 +98,10 @@ io.on("connection", socket => {
     }
     io.emit('new-doubt', message);
     msgArr.push(message)
+  });
+
+  socket.on('teacher-location', (message) => {
+    socket.broadcast.emit('teacher-location', message);
   });
 
   socket.on('get-doubts', (message) => {
