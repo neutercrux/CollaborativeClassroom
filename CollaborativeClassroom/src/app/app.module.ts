@@ -11,6 +11,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule} from '@angular/material/menu';
 import { NotifierModule, NotifierOptions } from 'angular-notifier';
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { PlotlyModule } from 'angular-plotly.js';
 
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { MainPageComponent } from './main-page/main-page.component';
@@ -26,6 +28,8 @@ import { MatDialogModule, MatTooltipModule, MatBadgeModule } from '@angular/mate
 import { FileDialogComponent } from './file-dialog/file-dialog.component';
 import { DoubtComponent } from './doubt/doubt.component';
 import { DoubtService } from './doubt.service';
+
+PlotlyModule.plotlyjs = PlotlyJS;
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -94,7 +98,8 @@ const customNotifierOptions: NotifierOptions = {
     ReactiveFormsModule,
     MatMenuModule,
     NotifierModule.withConfig(customNotifierOptions),
-    NgxPubSubModule
+    NgxPubSubModule,
+    PlotlyModule
   ],
   entryComponents: [
     StudentCodeEditorComponent,
