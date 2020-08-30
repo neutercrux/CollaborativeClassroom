@@ -91,6 +91,19 @@ export class StudentCodeEditorComponent implements OnInit {
   ngOnDestroy() {
   }
 
+  onNoteDrop(e: any, dropedOn: Note) {
+    console.log(e.dragData)
+    console.log(dropedOn)
+    var dragged = e.dragData;
+    if (dragged.id != dropedOn.id) {
+      dropedOn.text = dropedOn.text + "\n" + e.dragData.text;
+      const index: number = this.notes.indexOf(dragged);
+      if (index !== -1) {
+          this.notes.splice(index, 1);
+      }
+    }
+  }
+
   private fileOperations(msg: any)
   {
     console.log(msg);
@@ -187,8 +200,24 @@ export class StudentCodeEditorComponent implements OnInit {
     this._download.changeDownloadStatus(DownloadStatus.Start);
   }
 
+  private getNextNoteId(notes: Note[]) : number
+  {
+    if(notes.length == 0)
+      return 1
+    else
+    {
+      var max = 0
+      for(let i in notes)
+      {
+        if(max<notes[i].id)
+          max = notes[i].id
+      }
+      return max + 1
+    }
+  }
+
   openDialog(): void {
-    let x = new Note("",this.currentLine+1)
+    let x = new Note(this.getNextNoteId(this.notes),"",this.currentLine+1)
     const dialogRef = this.dialog.open(NoteDialogComponent, {
       height: '300px',
       width: '600px',
@@ -198,8 +227,24 @@ export class StudentCodeEditorComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log(result);
       if(result!=undefined)
-        this.addNote(result.text, result.lineNumber)
+        this.addNote(result.id,result.text, result.lineNumber)
     });
+  }
+
+  moveUp(note: Note): void
+  {
+    if(note.lineNumber <= 1)
+      return
+    note.lineNumber = note.lineNumber - 1
+    this.notes.sort(this.compareFn);
+    console.log(this.notes);
+  }
+
+  moveDown(note: Note): void
+  {
+    note.lineNumber = note.lineNumber + 1
+    this.notes.sort(this.compareFn);
+    console.log(this.notes);
   }
 
   editNoteDialog(note: Note): void
@@ -213,14 +258,26 @@ export class StudentCodeEditorComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log(result);
-      let x = this.notes.find(element => element.lineNumber == note.lineNumber)
+      let x = this.notes.find(element => element.id == note.id)
       x.lineNumber = result.lineNumber;
       x.text = result.text;
     });
+    this.notes.sort(this.compareFn);
+    console.log(this.notes);
+  }
+
+  deleteNote(note: Note): void
+  {
+    const index: number = this.notes.indexOf(note);
+    if (index !== -1) {
+        this.notes.splice(index, 1);
+    }
+    this.notes.sort(this.compareFn);
+    console.log(this.notes);
   }
 
 
-  addNote(text: string, currentLine: string) : void
+  addNote(id: number,text: string, currentLine: string) : void
   {
     let num = parseInt(currentLine);
     if((text=="")||(isNaN(num))||(num<1)||(num>this.totalCodeLength)||(this.currentFile==""))
@@ -228,15 +285,15 @@ export class StudentCodeEditorComponent implements OnInit {
       console.log("text " + text + "isNaN " + isNaN(num) + "num " + num + "currentFile " + this.currentFile)
       return;
     }
-    let x = this.notes.find(element => element.lineNumber == num)
-    if(x!=undefined)
-    {
-      x.text = x.text + "\n" + text;
-      console.log("added to same note");
-      return;
-    }
+    // let x = this.notes.find(element => element.lineNumber == num)
+    // if(x!=undefined)
+    // {
+    //   x.text = x.text + "\n" + text;
+    //   console.log("added to same note");
+    //   return;
+    // }
     let currentFileNote = this.fileNoteMap.find(element => element.fileName == this.currentFile);
-    currentFileNote.notes.push(new Note(text,num));
+    currentFileNote.notes.push(new Note(id,text,num));
     currentFileNote.notes.sort(this.compareFn);
     console.log(currentFileNote);
   }

@@ -68,10 +68,21 @@
         
         <ul class="list-group mt-5 mr-4">
             <div *ngFor="let note of notes">
-                <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item d-flex justify-content-between mt-2 align-items-start">
-                    <pre>{{note.text}}</pre>
-                    <button mat-raised-button matTooltip="Edit the note name" (click)="editNoteDialog(note)">Edit</button>
-                </li>
+                <div draggable [dragData] = "note" droppable (onDrop)="onNoteDrop($event,note)">
+                    <!-- <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item d-flex justify-content-between mt-2 align-items-start">
+                        <pre>{{note.text}}</pre>
+                        <button mat-raised-button matTooltip="Edit the note name" (click)="editNoteDialog(note)">Edit</button>
+                    </li> -->
+                    <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item mt-2">
+                        <pre class="card-text">{{note.text}}</pre>
+                        <div>
+                            <button class="inline mr-3" mat-raised-button matTooltip="Move to previous Line" (click)="moveUp(note)" >Move Up</button>
+                            <button class="inline mr-3" mat-raised-button matTooltip="Move to Next Line" (click)="moveDown(note)" >Move Down</button>
+                            <button class="inline mr-3" mat-raised-button matTooltip="Edit the note" (click)="editNoteDialog(note)">Edit</button>
+                            <button class="inline mr-3" mat-raised-button matTooltip="Delete the note" (click)="deleteNote(note)">Delete</button>
+                        </div>
+                    </li>
+                </div>
             </div>
         </ul>
     </div>
