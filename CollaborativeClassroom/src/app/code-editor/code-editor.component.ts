@@ -36,6 +36,14 @@ import { DownloadStatus, DownloadService } from '../download.service';
 import { JoinService } from '../join.service';
 import { LocationService } from '../location.service';
 
+import * as Plotly from '../../../node_modules/plotly.js/dist/plotly.js';
+import {
+  Config,
+  Data,
+  Layout
+} from 'plotly.js';
+
+
 @Component({
   selector: 'app-code-editor',
   templateUrl: './code-editor.component.html',
@@ -68,7 +76,27 @@ export class CodeEditorComponent implements OnInit {
   constructor(private _locationService:LocationService, private joinService:JoinService ,private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
+    let x = [];
+    for (let i = 0; i < 500; i++) {
+        x[i] = Math.random();
+    }
+    const trace = {
+        x: [1, 2, 3],
+        autobinx: true,
+        type: 'histogram',
+        histfunc : "count",
+        xbins: { 
+          end: 7, 
+          size: 1, 
+          start: -0
+      
+        }
+    };
+    const data = [trace];
+    Plotly.newPlot('myPlotlyDiv', data);
   }
+  
+
 
   ngAfterViewInit() {
     this.initializeEditor();
