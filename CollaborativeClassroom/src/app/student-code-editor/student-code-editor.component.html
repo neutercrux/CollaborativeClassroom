@@ -16,7 +16,7 @@
     </div>
     <div class="col-6">
         <div class="row mb-2">
-            <div class="input-group col-3 mb-3">
+            <div class="input-group col mb-3">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="languages-select">Lang</label>
                 </div>
@@ -24,7 +24,7 @@
                     <option [value]= "lang" >{{lang}}</option>
                 </select>
             </div>
-            <div class="input-group col-3 mb-3">
+            <div class="input-group col mb-3">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="themes-select">Themes</label>
                 </div>
@@ -32,7 +32,7 @@
                     <option *ngFor="let theme of themes" [value]="theme.name" >{{theme.name}}</option>
                 </select>
             </div>
-            <div class="col-3 mb-3">
+            <div class="col mb-3">
                 <p>
                     {{teacherLocation}}
                 </p>
