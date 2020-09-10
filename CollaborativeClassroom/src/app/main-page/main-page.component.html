@@ -1,13 +1,13 @@
 <div *ngIf="isStudent; then studentView else teacherView"></div>
 <ng-template #teacherView>
-    <h1> Teacher Interface</h1>
+    <!-- <h1> Teacher Interface</h1> -->
     <app-code-editor></app-code-editor>
     <div class="col-10 offset-2 mt-4">
         <app-doubt [isStudent] = "isStudent" ></app-doubt>
     </div>
 </ng-template>
 <ng-template #studentView>
-    <h1> Student Interface </h1>
+    <!-- <h1> Student Interface </h1> -->
     <app-student-code-editor></app-student-code-editor>
     <div class="col-6 offset-2 mt-4">
         <app-doubt [isStudent] = "isStudent" ></app-doubt>

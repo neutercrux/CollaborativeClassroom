@@ -3,6 +3,7 @@ import { CodeEditorService } from '../code-editor.service';
 import * as ace from 'ace-builds';
 import { THEMES } from '../themes';
 import { File, FileStatus } from '../file';
+import { Graph } from '../graph';
 import { Status } from '../message';
 
 import 'ace-builds/src-noconflict/mode-java';
@@ -36,12 +37,8 @@ import { DownloadStatus, DownloadService } from '../download.service';
 import { JoinService } from '../join.service';
 import { LocationService } from '../location.service';
 
-import * as Plotly from '../../../node_modules/plotly.js/dist/plotly.js';
-import {
-  Config,
-  Data,
-  Layout
-} from 'plotly.js';
+
+import { GraphDialogComponent } from '../graph-dialog/graph-dialog.component';
 
 
 @Component({
@@ -54,50 +51,26 @@ export class CodeEditorComponent implements OnInit {
   public codeEditor: ace.Ace.Editor;
   public themes = THEMES;
   public files: File[] = [];
+  public graphs: Graph[] = [];
   public currentFile: string = "";
   private currentRowLocation: number;
   public langArray: ILanguage[] = LANGUAGES;
   public outputString: string = "";
-  private usn:String = sessionStorage.getItem("name");;
+  private usn:String = sessionStorage.getItem("name");
   private designation:String = sessionStorage.getItem("designation");
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   lang: string;
   timer;
   sess: string;
-  // public graph = {
-  //   data: [
-  //       { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'red'} },
-  //       { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
-  //   ],
-  //   layout: {width: 320, height: 240, title: 'A Fancy Plot'}
-  // };
+  // private studentLineArr: number[] = [];
+  // private usnList: string[] = [];
 
   constructor(private _locationService:LocationService, private joinService:JoinService ,private _download: DownloadService,public dialog: MatDialog,private code : CodeService, private _codeEditorService:CodeEditorService, private webSocketService:WebsocketService) { }
 
   ngOnInit() {
-    let x = [];
-    for (let i = 0; i < 500; i++) {
-        x[i] = Math.random();
-    }
-    const trace = {
-        x: [1, 2, 3],
-        autobinx: true,
-        type: 'histogram',
-        histfunc : "count",
-        xbins: { 
-          end: 7, 
-          size: 1, 
-          start: -0
-      
-        }
-    };
-    const data = [trace];
-    Plotly.newPlot('myPlotlyDiv', data);
   }
   
-
-
   ngAfterViewInit() {
     this.initializeEditor();
     this.codeEditor.setReadOnly(true);
@@ -107,11 +80,14 @@ export class CodeEditorComponent implements OnInit {
       this.parseMsg(msg);
     })
     this.joinService.sendDetails(this.usn, this.designation)
+    this._locationService.getFeedback().subscribe((message) => {
+      this.parseFeedbackDetails(message);
+    });
   }
 
   publish() {
     var new_sess = this.codeEditor.getValue();
-    var new_location = this.codeEditor.getCursorPosition().row
+    var new_location = this.codeEditor.getCursorPosition().row + 1
     if(this.sess!=new_sess)
     {
       this.sess = new_sess;
@@ -124,6 +100,17 @@ export class CodeEditorComponent implements OnInit {
       this.currentRowLocation = new_location;
       console.log(this.currentRowLocation)
       this._locationService.sendTeacherLocation(this.currentFile, this.currentRowLocation)
+    }
+  }
+
+  private parseFeedbackDetails(msg: any)
+  {
+    console.log(msg)
+    var element = this.graphs.find(element => element.filename == msg.filename)
+    for(let x:number = msg.startRow; x <= msg.endRow; ++x)
+    {
+      // this.studentLineArr.push(x)
+      element.array.push(x)
     }
   }
 
@@ -187,6 +174,40 @@ export class CodeEditorComponent implements OnInit {
     });
   }
 
+  openGraphDialog(): void {
+    var currgraph = this.graphs.find(element => element.filename == this.currentFile)
+    if(currgraph!=undefined)
+    {
+      const dialogRef = this.dialog.open(GraphDialogComponent, {
+        height: '600px',
+        width: '1000px',
+        data: currgraph
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log(result);
+        if(result==false)
+          this.graphs.find(element => element.filename == this.currentFile).array = [];
+      });
+    }
+  }
+
+  editGraphDialog(filename: string): void
+  {
+
+    const dialogRef = this.dialog.open(GraphDialogComponent, {
+      height: '200px',
+      width: '600px',
+      data: filename
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if(result!=undefined)
+        this.updateFile(filename,result)
+    });
+  }
+
   addFile(filename: string)
   {
     if((this.files.find(element => element.name == filename)==undefined)&&(filename!=""))
@@ -201,6 +222,7 @@ export class CodeEditorComponent implements OnInit {
       }
       this.code.sendFile({ 'fileStatus' : FileStatus.CREATE_FILE, 'filename' : filename + "." + this.lang});
       this.switchCurrFile(filename);
+      this.graphs.push(new Graph(filename, []))
     }
     else
     {

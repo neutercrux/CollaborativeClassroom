@@ -27,6 +27,7 @@ import { MatDialogModule, MatTooltipModule, MatBadgeModule } from '@angular/mate
 import { FileDialogComponent } from './file-dialog/file-dialog.component';
 import { DoubtComponent } from './doubt/doubt.component';
 import { DoubtService } from './doubt.service';
+import { GraphDialogComponent } from './graph-dialog/graph-dialog.component';
 
 const customNotifierOptions: NotifierOptions = {
   position: {
@@ -81,7 +82,8 @@ const customNotifierOptions: NotifierOptions = {
     StudentDataComponent,
     DoubtComponent,
     NoteDialogComponent,
-    FileDialogComponent 
+    FileDialogComponent,
+    GraphDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -101,7 +103,8 @@ const customNotifierOptions: NotifierOptions = {
   entryComponents: [
     StudentCodeEditorComponent,
     NoteDialogComponent,
-    FileDialogComponent
+    FileDialogComponent,
+    GraphDialogComponent
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },

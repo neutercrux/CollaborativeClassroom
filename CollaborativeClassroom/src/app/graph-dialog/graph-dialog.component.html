@@ -1,0 +1,12 @@
+
+<div mat-dialog-content>
+    
+    <div>
+        <div id="myPlotlyDiv"> </div>
+    </div>
+    <p>{{data.filename}}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="deleteData()">Delete Data</button>
+  <button mat-button [mat-dialog-close]="data">Ok</button>
+</div>

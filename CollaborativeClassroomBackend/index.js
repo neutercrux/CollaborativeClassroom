@@ -104,6 +104,10 @@ io.on("connection", socket => {
     socket.broadcast.emit('teacher-location', message);
   });
 
+  socket.on('feedback', (message) => {
+    socket.broadcast.emit('feedback', message);
+  });
+
   socket.on('get-doubts', (message) => {
     for(i = 0; i <msgArr.length; ++i)
     {

@@ -55,8 +55,7 @@ export class StudentCodeEditorComponent implements OnInit {
   public langArray: ILanguage[] = LANGUAGES;
   public langComments: string[] = [];
   public outputString: string = "";
-  public teacherFileLocation: string;
-  public teacherRowLocation: number;
+  public teacherLocation: string = "";
   private usn:String = sessionStorage.getItem("name");;
   private designation:String = sessionStorage.getItem("designation");
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
@@ -89,6 +88,13 @@ export class StudentCodeEditorComponent implements OnInit {
   }
 
   ngOnDestroy() {
+  }
+
+  sendLocationRange()
+  {
+    var locrange = this.codeEditor.getSelectionRange() 
+    console.log(locrange)
+    this._locationService.sendStudentLocationRange(this.usn, this.currentFile, locrange.start.row + 1, locrange.end.row + 1)
   }
 
   onNoteDrop(e: any, dropedOn: Note) {
@@ -148,11 +154,12 @@ export class StudentCodeEditorComponent implements OnInit {
 
   private parseTeacherLocation(msg: any)
   {
-    this.teacherFileLocation = msg.filename;
-    this.teacherRowLocation = msg.row;
-    console.log(this.teacherFileLocation)
-    console.log(this.teacherRowLocation)
-    this.outputString = this.teacherFileLocation + (this.teacherRowLocation+1);
+    var teacherFileLocation:string = msg.filename;
+    var teacherRowLocation:string = msg.row;
+    console.log(teacherFileLocation)
+    console.log(teacherRowLocation)
+    this.teacherLocation = "Follow cursor at " + teacherFileLocation + ": Row " + teacherRowLocation;
+    console.log(this.teacherLocation)
   }
 
   changeCurrFile(newFile: string)

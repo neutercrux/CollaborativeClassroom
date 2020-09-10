@@ -32,6 +32,11 @@
                     <option *ngFor="let theme of themes" [value]="theme.name" >{{theme.name}}</option>
                 </select>
             </div>
+            <div class="col-3 mb-3">
+                <p>
+                    {{teacherLocation}}
+                </p>
+            </div>
         </div>
         
         <div class="row mb-4">
@@ -51,6 +56,11 @@
                     Clear
                 </button>
             </div>
+            <div class="col-4 col-lg-2 col-md-3 col-sm-4 w-75">
+                <button type="button" class="btn btn-warning btn-sm btn-block px-4 mx-2" (click)="sendLocationRange()">
+                    Send Feedback
+                </button>
+            </div>
         </div>
 
         <div class="row mt-4">
@@ -63,6 +73,7 @@
     <div class="col-4">
         <div class="d-flex justify-content-between mr-4" >
             <button mat-raised-button (click)="openDialog()">Add Note</button>
+            <!-- <button mat-raised-button (click)="sendLocationRange()">Send Location Details</button> -->
             <button mat-raised-button (click)="download()">Download</button>
         </div>
         

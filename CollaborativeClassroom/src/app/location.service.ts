@@ -24,4 +24,18 @@ export class LocationService {
       });
     });
   }
+
+  public sendStudentLocationRange(usn,filename, startRow, endRow)
+  {
+    this.socket.emit('feedback', {'usn':usn, 'filename':filename, 'startRow':startRow,'endRow':endRow});
+  }
+
+  public getFeedback = () => {
+    return Observable.create((observer) => {
+        this.socket.on('feedback', (message) => {
+            observer.next(message);
+      });
+    });
+  }
+
 }
