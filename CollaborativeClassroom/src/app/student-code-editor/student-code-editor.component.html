@@ -87,10 +87,10 @@
                     <li [matBadge]="note.lineNumber" matBadgePosition="above before" class="list-group-item mt-2">
                         <pre class="card-text">{{note.text}}</pre>
                         <div>
-                            <button class="inline mr-3" mat-raised-button matTooltip="Move to previous Line" (click)="moveUp(note)" >Move Up</button>
-                            <button class="inline mr-3" mat-raised-button matTooltip="Move to Next Line" (click)="moveDown(note)" >Move Down</button>
-                            <button class="inline mr-3" mat-raised-button matTooltip="Edit the note" (click)="editNoteDialog(note)">Edit</button>
-                            <button class="inline mr-3" mat-raised-button matTooltip="Delete the note" (click)="deleteNote(note)">Delete</button>
+                            <span class="inline mr-3 fa fa-arrow-up" mat-raised-button matTooltip="Move to previous Line" (click)="moveUp(note)" ></span>
+                            <span class="inline mr-3 fa fa-arrow-down" mat-raised-button matTooltip="Move to Next Line" (click)="moveDown(note)" ></span>
+                            <span class="inline mr-3 fa fa-pencil" mat-raised-button matTooltip="Edit the note" (click)="editNoteDialog(note)"></span>
+                            <span class="inline mr-3 fa fa-trash" mat-raised-button matTooltip="Delete the note" (click)="deleteNote(note)"></span>
                         </div>
                     </li>
                 </div>
