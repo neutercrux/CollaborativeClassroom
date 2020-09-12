@@ -69,7 +69,7 @@ export class DoubtComponent implements OnInit {
   }
 
   private downloadDoubt(currentDownloadStatus: DownloadStatus){
-    console.log(currentDownloadStatus);
+    // console.log(currentDownloadStatus);
     if(currentDownloadStatus == DownloadStatus.Start)
     {
       var data = '';
@@ -82,7 +82,7 @@ export class DoubtComponent implements OnInit {
           data += "Q"+m.qno+": "+m.message+"\n";
         }
       }
-      console.log(data)
+      // console.log(data)
       
       var FileSaver = require('file-saver');
       var blob = new Blob([data], {type: "text/plain;charset=utf-8"});

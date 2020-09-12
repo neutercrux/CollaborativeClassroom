@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit {
     const username = target.querySelector('#username').value;
     const password = target.querySelector('#password').value;
     const email = target.querySelector('#email').value;
-    console.log(username,password,email);
+    // console.log(username,password,email);
     this.Auth.addUserDetails(username,email,password,).subscribe(data=>{
       this.response = JSON.parse(JSON.stringify(data));
       // console.log(this.response);
@@ -33,7 +33,7 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/login']);
       }
       else if(this.response.status==200){
-        console.log('Failed')
+        // console.log('Failed')
         this.showNotification('error','User is not eligible to register!')
         // this.router.navigate(['/register']);
       }
@@ -41,7 +41,7 @@ export class RegisterComponent implements OnInit {
   }
   
   public showNotification( type: string, message: string ): void {
-    console.log('notif')
+    // console.log('notif')
 		this.notifier.notify( type, message );
 	}
 }

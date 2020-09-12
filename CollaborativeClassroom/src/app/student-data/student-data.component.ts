@@ -26,10 +26,10 @@ export class StudentDataComponent implements OnInit {
 
   updateData(event){
     event.preventDefault();
-    console.log(this.dataArr[0].name)
+    // console.log(this.dataArr[0].name)
     this.studentData.update(this.dataArr).subscribe(data => {
       this.response = JSON.parse(JSON.stringify(data));
-      console.log(this.response);
+      // console.log(this.response);
     })
   }
 
@@ -64,7 +64,7 @@ export class StudentDataComponent implements OnInit {
           this.dataArr.push(csvRecord);          
       }       
     }   
-    console.log(this.dataArr)
+    // console.log(this.dataArr)
     return this.dataArr; 
   } 
   fileChangeListener($event: any): void {  

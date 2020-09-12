@@ -61,6 +61,7 @@ export class CodeEditorComponent implements OnInit {
   @ViewChild('codeEditor',{static: false}) private codeEditorElmRef: ElementRef;
   response: any;
   lang: string;
+  public selectedlang: string = "c_cpp";
   timer;
   sess: string;
   // private studentLineArr: number[] = [];
@@ -75,7 +76,7 @@ export class CodeEditorComponent implements OnInit {
     this.initializeEditor();
     this.codeEditor.setReadOnly(true);
     this.code.messages.subscribe(msg => {
-      console.log(msg)
+      // console.log(msg)
       msg = JSON.parse(msg);
       this.parseMsg(msg);
     })
@@ -98,25 +99,26 @@ export class CodeEditorComponent implements OnInit {
     if(this.currentRowLocation != new_location)
     {
       this.currentRowLocation = new_location;
-      console.log(this.currentRowLocation)
+      // console.log(this.currentRowLocation)
       this._locationService.sendTeacherLocation(this.currentFile, this.currentRowLocation)
     }
   }
 
   private parseFeedbackDetails(msg: any)
   {
-    console.log(msg)
+    // console.log(msg)
     var element = this.graphs.find(element => element.filename == msg.filename)
     for(let x:number = msg.startRow; x <= msg.endRow; ++x)
     {
       // this.studentLineArr.push(x)
       element.array.push(x)
     }
+    // console.log(element)
   }
 
   private parseMsg(msg: any)
   {
-    console.log(msg);
+    // console.log(msg);
     if(msg.status == Status.SEND_ALL_FILES)
     {
       for (let i in this.files)
@@ -132,7 +134,7 @@ export class CodeEditorComponent implements OnInit {
     for (let i in this.files)
     {
       let x = this.files[i].data
-      console.log(x);
+      // console.log(x);
       var lang = this.files[i].language
       zip.file(this.files[i].name + "." + lang, x);
     }
@@ -152,7 +154,7 @@ export class CodeEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       if(result!=undefined)
         this.addFile(result)
     });
@@ -168,7 +170,7 @@ export class CodeEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       if(result!=undefined)
         this.updateFile(filename,result)
     });
@@ -185,7 +187,7 @@ export class CodeEditorComponent implements OnInit {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        console.log(result);
+        // console.log(result);
         if(result==false)
           this.graphs.find(element => element.filename == this.currentFile).array = [];
       });
@@ -202,7 +204,7 @@ export class CodeEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       if(result!=undefined)
         this.updateFile(filename,result)
     });
@@ -226,7 +228,7 @@ export class CodeEditorComponent implements OnInit {
     }
     else
     {
-      console.log("Choose a different name");
+      // console.log("Choose a different name");
     }
   }
 
@@ -238,6 +240,8 @@ export class CodeEditorComponent implements OnInit {
     let temp = this.files.find(element => element.name == this.currentFile);
     this.codeEditor.setValue(temp.data);
     this.lang = temp.language;
+    this.selectedlang = this.langArray.find(element => element.ext == this.lang).name
+    // console.log(this.selectedlang)
     this.codeEditor.getSession().setMode("ace/mode/" + this.langArray.find(element => element.ext == temp.language).name);
   }
 
@@ -245,6 +249,7 @@ export class CodeEditorComponent implements OnInit {
   {
     this.files.find(element => element.name == oldFileName).name = newFileName;
     var lang = this.files.find(element => element.name == oldFileName).language;
+    // console.log("Hello")
     this.code.sendFile({ 'fileStatus' : FileStatus.UPDATE_FILE, 'filename' : oldFileName + "." + lang, 'newfilename' : newFileName + "." + this.lang });
   }
 
@@ -330,6 +335,7 @@ export class CodeEditorComponent implements OnInit {
   public setLanguage(language: string ): void {
     if (this.codeEditor) {
       this.lang = this.langArray.find(element => element.name == language).ext
+      this.selectedlang = this.langArray.find(element => element.ext == this.lang).name
       this.files.find(element => element.name == this.currentFile).language = this.lang
       this.updateFile(this.currentFile,this.currentFile);
       var mode = "ace/mode/" + language;

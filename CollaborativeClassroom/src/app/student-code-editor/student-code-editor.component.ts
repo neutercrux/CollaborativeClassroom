@@ -93,13 +93,13 @@ export class StudentCodeEditorComponent implements OnInit {
   sendLocationRange()
   {
     var locrange = this.codeEditor.getSelectionRange() 
-    console.log(locrange)
+    // console.log(locrange)
     this._locationService.sendStudentLocationRange(this.usn, this.currentFile, locrange.start.row + 1, locrange.end.row + 1)
   }
 
   onNoteDrop(e: any, dropedOn: Note) {
-    console.log(e.dragData)
-    console.log(dropedOn)
+    // console.log(e.dragData)
+    // console.log(dropedOn)
     var dragged = e.dragData;
     if (dragged.id != dropedOn.id) {
       dropedOn.text = dropedOn.text + "\n" + e.dragData.text;
@@ -112,7 +112,7 @@ export class StudentCodeEditorComponent implements OnInit {
 
   private fileOperations(msg: any)
   {
-    console.log(msg);
+    // console.log(msg);
     if(msg.status != 0)
     {
       var nameArr = msg.filename.split(".");
@@ -156,10 +156,8 @@ export class StudentCodeEditorComponent implements OnInit {
   {
     var teacherFileLocation:string = msg.filename;
     var teacherRowLocation:string = msg.row;
-    console.log(teacherFileLocation)
-    console.log(teacherRowLocation)
-    this.teacherLocation = "Follow cursor at " + teacherFileLocation + ": Row " + teacherRowLocation;
-    console.log(this.teacherLocation)
+    this.teacherLocation = "Follow cursor at " + teacherFileLocation + ": line " + teacherRowLocation;
+    // console.log(this.teacherLocation)
   }
 
   changeCurrFile(newFile: string)
@@ -172,6 +170,12 @@ export class StudentCodeEditorComponent implements OnInit {
     this.codeEditor.getSession().setMode("ace/mode/" + this.lang);
   }
 
+  /* 
+  py - """ """
+  js, java, cs, c_cpp - "/*" 
+  ruby - =begin, =end
+  */
+
   public download(currentDownloadStatus: DownloadStatus = DownloadStatus.Start): void 
   {
     var zip = new JSZip();
@@ -180,6 +184,7 @@ export class StudentCodeEditorComponent implements OnInit {
     {
       let x = this.files.find(element => element.name == this.fileNoteMap[i].fileName);
       comment = this.langArray.find(element => element.ext == x.language).comment_syntax;
+      var multilineComment = (comment == "#")? '"""': '/*'
       let y = this.fileNoteMap[i].notes
       var line: number = 0;
       var arr = x.data.split("\n");
@@ -187,15 +192,44 @@ export class StudentCodeEditorComponent implements OnInit {
       while(line<arr.length)
       {
         data+=arr[line]
-        var z = y.find(element => element.lineNumber-1 == line)
-        if(z != undefined)
+        // var z = y.find(element => element.lineNumber-1 == line)
+        // if(z != undefined)
+        // {
+        //   data = data + comment + z.text;
+        // }
+        for(let i in y)
         {
-          data = data + comment + z.text;
+          if(y[i].lineNumber-1 == line)
+          {
+            if(y[i].text.includes("\n"))
+            {
+              data += "\n" + multilineComment + y[i].text + multilineComment.split('').reverse().join('');
+            }
+            else
+            {
+              data += " " + comment + y[i].text;
+            }
+          }
         }
         data += "\n";
         ++line;
       }
-      console.log(data);
+      for(let i in y)
+      {
+        if(y[i].lineNumber > line)
+        {
+          if(y[i].text.includes("\n"))
+          {
+            data += multilineComment + y[i].text + multilineComment.split('').reverse().join('');
+          }
+          else
+          {
+            data += "" + comment + y[i].text;
+          }
+          data += "\n"
+        }
+      }
+      // console.log(data);
       var lang = this.files.find(element => element.name == this.fileNoteMap[i].fileName).language
       zip.file(this.fileNoteMap[i].fileName + "." + lang, data);
     }
@@ -232,7 +266,7 @@ export class StudentCodeEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       if(result!=undefined)
         this.addNote(result.id,result.text, result.lineNumber)
     });
@@ -244,14 +278,14 @@ export class StudentCodeEditorComponent implements OnInit {
       return
     note.lineNumber = note.lineNumber - 1
     this.notes.sort(this.compareFn);
-    console.log(this.notes);
+    // console.log(this.notes);
   }
 
   moveDown(note: Note): void
   {
     note.lineNumber = note.lineNumber + 1
     this.notes.sort(this.compareFn);
-    console.log(this.notes);
+    // console.log(this.notes);
   }
 
   editNoteDialog(note: Note): void
@@ -264,13 +298,13 @@ export class StudentCodeEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      // console.log(result);
       let x = this.notes.find(element => element.id == note.id)
       x.lineNumber = result.lineNumber;
       x.text = result.text;
     });
     this.notes.sort(this.compareFn);
-    console.log(this.notes);
+    // console.log(this.notes);
   }
 
   deleteNote(note: Note): void
@@ -280,7 +314,7 @@ export class StudentCodeEditorComponent implements OnInit {
         this.notes.splice(index, 1);
     }
     this.notes.sort(this.compareFn);
-    console.log(this.notes);
+    // console.log(this.notes);
   }
 
 
@@ -289,7 +323,7 @@ export class StudentCodeEditorComponent implements OnInit {
     let num = parseInt(currentLine);
     if((text=="")||(isNaN(num))||(num<1)||(num>this.totalCodeLength)||(this.currentFile==""))
     {
-      console.log("text " + text + "isNaN " + isNaN(num) + "num " + num + "currentFile " + this.currentFile)
+      // console.log("text " + text + "isNaN " + isNaN(num) + "num " + num + "currentFile " + this.currentFile)
       return;
     }
     // let x = this.notes.find(element => element.lineNumber == num)
@@ -302,7 +336,7 @@ export class StudentCodeEditorComponent implements OnInit {
     let currentFileNote = this.fileNoteMap.find(element => element.fileName == this.currentFile);
     currentFileNote.notes.push(new Note(id,text,num));
     currentFileNote.notes.sort(this.compareFn);
-    console.log(currentFileNote);
+    // console.log(currentFileNote);
   }
 
   compareFn(a: Note,b: Note) : number
@@ -380,7 +414,7 @@ export class StudentCodeEditorComponent implements OnInit {
 
   public runCode():void {
       const code = this.codeEditor.getValue();
-      console.log(this.lang);
+      // console.log(this.lang);
       this._codeEditorService.getOutput(code,this.lang).subscribe(data=>{
         // console.log(data.body);
         this.response = JSON.parse(JSON.stringify(data.body))

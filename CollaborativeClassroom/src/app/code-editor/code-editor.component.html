@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-2 mt-4">
         <button class="mb-4 ml-4" mat-raised-button (click)="openDialog()">Add File</button>
-        <div *ngFor="let file of files">
+        <div class="ml-4" *ngFor="let file of files">
             <div *ngIf="currentFile == file.name; then activeFile else nonActiveFile"></div>
                 <ng-template #activeFile>
                     <button type="button" (click)='switchCurrFile(file.name)' class="list-group-item list-group-item-action active">
@@ -25,7 +25,7 @@
                         <label class="input-group-text" for="languages-select">Languages</label>
                     </div>
                     <select class="custom-select" id="languages-select" (change)="setLanguage(languagesSelect.value)" #languagesSelect>
-                        <option *ngFor="let lang of langArray" [value]= "lang.name" >{{lang.name}}</option>
+                        <option *ngFor="let lang of langArray" [value]= "lang.name" [selected]="lang.name===this.selectedlang" >{{lang.name}}</option>
                     </select>
                 </div>
                 <!-- theme radio buttons -->

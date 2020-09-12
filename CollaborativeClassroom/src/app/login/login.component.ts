@@ -31,8 +31,8 @@ export class LoginComponent implements OnInit {
       this.response = JSON.parse(JSON.stringify(data));
       // console.log(this.response.body[0].designation);
       
-      console.log(this.response.status)
-      console.log(this.response);
+      // console.log(this.response.status)
+      // console.log(this.response);
       if(this.response.status==200 && this.response.body[0].designation=='student'){
         // this.router.navigate(['/mainPage'])
         this.desig = this.response.body[0].designation
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
     });
   }
   public showNotification( type: string, message: string ): void {
-    console.log('notif')
+    // console.log('notif')
 		this.notifier.notify( type, message );
 	}
 }

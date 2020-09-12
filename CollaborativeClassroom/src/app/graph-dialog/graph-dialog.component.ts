@@ -30,7 +30,6 @@ export class GraphDialogComponent implements OnInit {
 
   plotGraph()
   {
-    console.log()
     const trace = {
         x: this.data.array,
         autobinx: true,
@@ -70,7 +69,7 @@ export class GraphDialogComponent implements OnInit {
       linewidth: 2,
       mirror: true,
       automargin: true,
-      title: 'Count'
+      title: 'No of students'
           }
       },
       { //this is where the configuration is defined
